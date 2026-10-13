@@ -16,14 +16,16 @@ const TOTAL_LIMIT = 16000;
 
 const RULES = {
   scout: "Solo lectura. Responde exactamente lo que se te pregunta, con rutas y hechos, y termina con «## FINDINGS».",
+  disenador:
+    "Escribes solo en docs/diseno/**. Partes de la estética de la casa (skill orquesta:diseno) y la haces propia de este proyecto. No cambias decisiones de producto: si faltan pantallas o textos, pregúntalo en tu reporte. tokens.css se genera solo desde tokens.json. Termina con «## DESIGN REPORT».",
   arquitecto:
     "Escribes solo en docs/tecnico/**. Traduce la capa de producto aprobada; no cambies lo que la persona decidió. Si falta una decisión de producto, pregúntala en tu reporte. Termina con «## ARCHITECT REPORT».",
   "builder-frontend":
-    "Construyes solo el paquete (WP) que te asignan y solo en la zona frontend. Nunca tocas docs/**, tests/aceptacion|e2e|regresion ni el contrato. Habla con el backend solo según docs/tecnico/contrato-api.md. Si falta algo de producto: Status product-gap; si el contrato no alcanza: contract-gap. No haces commits. Al terminar, un hook ejecuta tus pruebas rápidas. Termina con «## BUILD REPORT».",
+    "Construyes solo el paquete (WP) que te asignan y solo en la zona frontend. Nunca tocas docs/**, tests/aceptacion|e2e|regresion ni el contrato. Habla con el backend solo según docs/tecnico/contrato-api.md. El aspecto lo manda docs/diseno/ (sistema.md, tokens.css, referencia.html): solo tokens, nada de colores, tipografías ni radios sueltos. Si falta algo de producto: Status product-gap; si el contrato no alcanza: contract-gap; si el diseño no cubre algo visible e importante: design-gap. No haces commits. Al terminar, un hook ejecuta tus pruebas rápidas. Termina con «## BUILD REPORT».",
   "builder-backend":
     "Construyes solo el paquete (WP) que te asignan y solo en la zona backend. Nunca tocas docs/**, tests/aceptacion|e2e|regresion ni el contrato. Cumple docs/tecnico/contrato-api.md al pie de la letra. Si falta algo de producto: Status product-gap; si el contrato no alcanza: contract-gap. No haces commits. Al terminar, un hook ejecuta tus pruebas rápidas. Termina con «## BUILD REPORT».",
   reviewer:
-    "No editas nada. Ejecuta tú mismo todas las pruebas, contrasta el paquete con su spec técnica y con los criterios de la funcionalidad, revisa el alcance con git. Termina con «## REVIEW VERDICT».",
+    "No editas nada. Ejecuta tú mismo todas las pruebas, contrasta el paquete con su spec técnica, con los criterios de la funcionalidad y, si es de frontend, con el sistema de diseño; revisa el alcance con git (los archivos de un WP en paralelo no son de esta revisión). Termina con «## REVIEW VERDICT».",
   "jefe-de-pruebas":
     "Evalúas contra las specs de la persona, no contra lo que el código parece hacer. Corres primero la batería de regresión. Solo lanzas testers. Todo fallo nuevo queda en el registro con una prueba en tests/regresion/. Termina con «## EVALUATION VERDICT».",
   tester:
@@ -91,6 +93,28 @@ function technical(root, role) {
   return parts.join("\n\n") || null;
 }
 
+const DESIGN_ROLES = ["disenador", "arquitecto", "builder-frontend", "reviewer", "jefe-de-pruebas", "tester-experiencia"];
+
+function design(root) {
+  const dir = path.join(root, "docs", "diseno");
+  const files = ["sistema.md", "tokens.json", "tokens.css", "referencia.html", "direcciones.html"].filter((f) => fs.existsSync(path.join(dir, f)));
+  if (!files.length) return null;
+  const lines = [];
+  const tokens = c.readJson(path.join(dir, "tokens.json"));
+  if (tokens && typeof tokens === "object") {
+    if (tokens.nombre) lines.push(`${tokens.nombre} · versión ${tokens.version || 1}`);
+    const t = tokens.tipografia || {};
+    const fonts = ["titulos", "texto", "mono"].filter((k) => t[k] && t[k].familia).map((k) => `${k}: ${t[k].familia}`);
+    if (fonts.length) lines.push("Tipografías: " + fonts.join(" · "));
+    const light = (tokens.color && tokens.color.claro) || {};
+    const colors = ["fondo", "superficie", "texto", "texto_suave", "acento", "error"].filter((k) => light[k]).map((k) => `${k} ${light[k]}`);
+    if (colors.length) lines.push("Colores (claro): " + colors.join(" · ") + (tokens.color.oscuro ? " · con modo oscuro" : ""));
+    if (tokens.firma) lines.push("Firma: " + tokens.firma);
+  }
+  lines.push("Archivos: " + files.map((f) => "docs/diseno/" + f).join(", "));
+  return lines.join("\n");
+}
+
 function failures(root) {
   const s = registro.summary(root);
   if (!s.exists || !s.total) return null;
@@ -130,6 +154,7 @@ function build(role, root) {
   add("Producto · la idea (docs/producto/1-idea.md)", c.readText(path.join(root, "docs", "producto", "1-idea.md"), 1500));
   add("Producto · funcionalidades (docs/producto/2-funcionalidades.md)", c.readText(path.join(root, "docs", "producto", "2-funcionalidades.md"), 3000));
   add("Producto · flujos", flowIndex(root));
+  if (DESIGN_ROLES.includes(role)) add("Diseño (docs/diseno/)", design(root));
   if (role !== "scout") add("Técnico", technical(root, role));
   if (role !== "scout" && role !== "arquitecto") add("Pruebas", failures(root));
 

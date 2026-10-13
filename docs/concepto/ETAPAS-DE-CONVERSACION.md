@@ -105,10 +105,13 @@ Los **criterios de aceptación** se escriben aquí, en tu lenguaje ("con una con
 
 ### Etapa 4 · Experiencia
 
-- **Objetivo:** que veas cómo se verá y se sentirá la app antes de construirla.
-- **Hablamos de:** qué pantallas habrá, qué hay en cada una, qué mensajes ve la persona (también cuando no hay datos, mientras carga o cuando hay un error) y el estilo (colores, tono, referencias que te gusten).
-- **Ves:** `docs/producto/4-experiencia/` con la lista de pantallas y **bocetos simples** en Excalidraw: cajas con "botón Reservar", "lista de horas libres", etc.
-- **Decides:** si la app se siente como la imaginas.
+- **Objetivo:** que veas cómo se verá y se sentirá la app antes de construirla, y que elijas su aspecto entre opciones reales.
+- **Hablamos de:** qué pantallas habrá, qué hay en cada una y qué mensajes ve la persona (también cuando no hay datos, mientras carga o cuando hay un error). Y de cómo quieres que se sienta: tres palabras («cálida, seria, de barrio»), apps o webs que te gusten o no, y tu marca si ya la tienes.
+- **Ves:**
+  - `docs/producto/4-experiencia/` con la lista de pantallas y **bocetos simples** en Excalidraw: cajas con "botón Reservar", "lista de horas libres", etc.
+  - `docs/diseno/direcciones.html`: **tres estilos** con tus pantallas y tus textos reales, que abres con doble clic. Parten del estilo de la casa (cálido, editorial, tipo papel, con letras de libro y un solo color de acento): A es el más fiel a la casa, B la mezcla con el mundo de tu negocio y C un salto más atrevido. Cada uno trae una **firma**, un detalle propio. Aparte, **opciones extra** con su consecuencia: versión oscura, instalable en el móvil, fotos, movimiento.
+  - Después de elegir, `docs/diseno/referencia.html`: tu app en el estilo elegido, **navegable**, para tocar los botones y pasar de pantalla antes de que exista.
+- **Decides:** qué estilo (o qué mezcla: «la letra de A con los colores de C»), qué opciones extra, y si la app se siente como la imaginas. Si el aspecto no te importa, dices «usa el estilo de la casa» y se salta la elección.
 
 ### Etapa 5 · Implementación
 
@@ -186,6 +189,8 @@ Siguiente: terminar «Reservar una cita» y evaluar la fase.
 4. Si confirmas, actualiza tu capa de producto (la funcionalidad y su flujo suben de versión), el arquitecto replanifica y el equipo sigue.
 
 Los cambios **siempre** entran por el orquestador. Ningún builder recibe cambios directos, así tu capa de producto nunca queda desactualizada respecto a lo que se construye.
+
+Los **cambios solo visuales** («otros colores», «la letra más grande», «más aire en la agenda») van por un camino más corto: el diseñador ajusta el estilo, te enseña la referencia actualizada y, con tu OK, se construyen paquetes solo de la parte que ves. La parte que guarda los datos no se toca.
 
 ---
 

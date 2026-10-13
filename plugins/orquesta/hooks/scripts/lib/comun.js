@@ -21,6 +21,7 @@ const ROLES = [
   "tester-limites",
   "tester-experiencia",
   "archivista",
+  "disenador",
 ];
 const TESTERS = ["tester-recorridos", "tester-servidor", "tester-limites", "tester-experiencia"];
 const BUILDERS = ["builder-frontend", "builder-backend"];
@@ -30,6 +31,8 @@ const ZONES = {
   tecnico: "docs/tecnico/",
   pruebas: "docs/pruebas/",
   memoria: "docs/project-memory/",
+  diseno: "docs/diseno/",
+  tokensCss: "docs/diseno/tokens.css",
   plan: "docs/tecnico/trabajo/PLAN.md",
   evidencias: "docs/pruebas/evidencias/",
   aceptacion: "tests/aceptacion/",
@@ -37,9 +40,9 @@ const ZONES = {
   regresion: "tests/regresion/",
 };
 const QA_TEST_DIRS = [ZONES.aceptacion, ZONES.e2e, ZONES.regresion];
-// Places a builder must never write: the product, technical, testing and
-// memory layers, the independent tests, and tool configuration.
-const BUILDER_PROTECTED = [ZONES.producto, ZONES.tecnico, ZONES.pruebas, ZONES.memoria, ...QA_TEST_DIRS, ".claude/", ".git/"];
+// Places a builder must never write: the product, design, technical, testing
+// and memory layers, the independent tests, and tool configuration.
+const BUILDER_PROTECTED = [ZONES.producto, ZONES.diseno, ZONES.tecnico, ZONES.pruebas, ZONES.memoria, ...QA_TEST_DIRS, ".claude/", ".git/"];
 
 // Maps an agent_type to one of our roles. Plugin-scoped names must carry our
 // prefix; a bare name is accepted because the main-thread agent may arrive
@@ -132,6 +135,16 @@ function globToRegex(glob) {
 
 function matchesAny(rel, globs) {
   return (globs || []).some((g) => globToRegex(g).test(rel));
+}
+
+// A zone is a list of globs; a glob starting with "!" excludes what it
+// matches ("src/app/**", "!src/app/api/**"). A path is inside the zone when
+// some plain glob matches it and no excluding glob does.
+function inZone(rel, globs) {
+  const list = [].concat(globs || []).filter((g) => typeof g === "string" && g);
+  const include = list.filter((g) => !g.startsWith("!"));
+  const exclude = list.filter((g) => g.startsWith("!")).map((g) => g.slice(1));
+  return matchesAny(rel, include) && !matchesAny(rel, exclude);
 }
 
 function isSecretFile(file) {
@@ -320,6 +333,7 @@ module.exports = {
   under,
   globToRegex,
   matchesAny,
+  inZone,
   isSecretFile,
   SKIP_MARKERS,
   isTestFile,

@@ -45,6 +45,22 @@ Decisions that are theirs: what the app does, for whom, what it says, how it loo
 
 Decisions that are not theirs (the technical team takes them; mention them only if asked): languages, frameworks, databases, code structure, libraries, test tools.
 
+## Presenting the visual directions
+
+Point to the file, describe each direction in feelings and things they can picture, never in hex codes or typeface names, and recommend one:
+
+```text
+Te preparé tres estilos para tu app. Ábrelos con doble clic: docs/diseno/direcciones.html
+  A) «Papel y tinta»: cálido y sereno, letras de libro y un toque terracota.
+     El más clásico; se lee muy bien en el móvil.
+  B) «Navaja y papel»: el mismo calor, con detalles de barbería: una raya fina
+     como la del poste y la confirmación como un ticket.
+  C) «Barrio de noche»: oscuro y con carácter, letras grandes y un dorado viejo.
+     El más atrevido.
+Recomiendo B: se siente tuya sin perder calma.
+¿Cuál te gusta más? También puedes mezclar: «la letra de A con los colores de C».
+```
+
 ## Progress update ("¿cómo vamos?")
 
 ```text
@@ -91,3 +107,6 @@ Siguiente: fase 2 · «Gestión». ¿Le doy luz verde?
 | autenticación | entrar con tu cuenta |
 | autorización / permisos | quién puede ver o hacer qué |
 | caché | copia rápida para que cargue antes |
+| design system / tokens | el estilo de tu app (colores, letras, botones) |
+| UI / componentes | las piezas de las pantallas (botones, campos, tarjetas) |
+| modo oscuro | la versión con fondo oscuro, para la noche |

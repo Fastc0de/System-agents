@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Barbería Navaja · Tres estilos para tu app</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Geist:wght@400;500;600&family=Hanken+Grotesk:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  /* ---------- the page itself (house style) ---------- */
+  :root {
+    --page-fondo: #FAF9F5;
+    --page-texto: #1F1E1C;
+    --page-suave: #5E5B53;
+    --page-borde: #E3DFD3;
+    --page-acento: #B5532F;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--page-fondo);
+    color: var(--page-texto);
+    font-family: "Hanken Grotesk", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .intro {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 56px 20px 40px;
+  }
+  .intro .kicker {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: var(--page-suave);
+  }
+  .intro h1 {
+    margin: 0 0 12px;
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(32px, 6vw, 48px);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  .intro p { margin: 0; max-width: 62ch; color: var(--page-suave); }
+  .jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; padding: 0; list-style: none; }
+  .jump a {
+    display: inline-flex; align-items: center; gap: 8px;
+    min-height: 44px; padding: 0 16px;
+    border: 1px solid var(--page-borde); border-radius: 999px;
+    color: var(--page-texto); text-decoration: none; background: #fff;
+  }
+  .jump a:hover { border-color: var(--page-texto); }
+  .jump a:focus-visible, .btn:focus-visible { outline: 3px solid #2F6BAE; outline-offset: 2px; }
+  .jump b { font-family: "Source Serif 4", Georgia, serif; }
+
+  /* ---------- one band per direction, driven by its tokens ---------- */
+  .dir {
+    background: var(--fondo);
+    color: var(--texto);
+    font-family: var(--fuente-texto);
+    border-top: 1px solid var(--borde);
+  }
+  .dir-inner { max-width: 1120px; margin: 0 auto; padding: 56px 20px 64px; }
+  .dir-letter { margin: 0 0 4px; font-size: 14px; color: var(--texto-suave); letter-spacing: 0.02em; }
+  .dir-name {
+    margin: 0 0 12px;
+    font-family: var(--fuente-titulos);
+    font-weight: var(--peso-titulos);
+    font-size: clamp(36px, 7vw, 56px);
+    line-height: 1.05;
+    letter-spacing: var(--tracking-titulos);
+  }
+  .dir-feel { margin: 0; max-width: 58ch; font-size: 18px; }
+  .dir-body { display: grid; gap: 40px; margin-top: 40px; }
+  @media (min-width: 1040px) { .dir-body { grid-template-columns: minmax(0, 1fr) auto; align-items: start; } }
+
+  .label {
+    margin: 32px 0 12px;
+    font-family: var(--fuente-texto);
+    font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--texto-suave);
+  }
+  .label:first-child { margin-top: 0; }
+
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+  .swatches li { display: flex; align-items: center; gap: 12px; font-size: 14px; line-height: 1.3; }
+  .swatches .sw { flex: none; width: 40px; height: 40px; border-radius: var(--radio-sm); border: 1px solid var(--borde); }
+  .swatches small { display: block; color: var(--texto-suave); }
+
+  .specimen {
+    padding: 20px;
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+  }
+  .specimen .t { margin: 0 0 8px; font-family: var(--fuente-titulos); font-weight: var(--peso-titulos); font-size: 30px; line-height: 1.15; letter-spacing: var(--tracking-titulos); }
+  .specimen .p { margin: 0 0 12px; max-width: 46ch; }
+  .specimen .m { margin: 0; font-size: 13px; color: var(--texto-suave); }
+
+  .firma-note { margin: 12px 0 0; max-width: 52ch; color: var(--texto-suave); font-size: 15px; }
+
+  .pieces { display: grid; gap: 16px; align-items: start; }
+  @media (min-width: 640px) { .pieces { grid-template-columns: 1fr 1fr; } }
+  .pieces .row { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+  /* ---------- components, shared, themed by tokens ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 44px; padding: 0 20px;
+    font: 500 16px/1 var(--fuente-texto);
+    border-radius: var(--radio-btn);
+    border: 1px solid transparent;
+    cursor: pointer; text-decoration: none;
+    transition: background-color 200ms cubic-bezier(0.2, 0, 0, 1), border-color 200ms cubic-bezier(0.2, 0, 0, 1);
+  }
+  .btn.primary { background: var(--acento); color: var(--acento-texto); }
+  .btn.primary:hover { background: var(--acento-hover); }
+  .btn.secondary { background: var(--superficie); color: var(--texto); border-color: var(--borde-fuerte); }
+  .btn.block { width: 100%; }
+  .field { display: grid; gap: 6px; width: 100%; }
+  .field label { font-size: 14px; font-weight: 500; }
+  .input {
+    display: flex; align-items: center; justify-content: space-between;
+    min-height: 44px; padding: 0 12px;
+    background: var(--superficie); color: var(--texto);
+    border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm);
+    font-size: 16px;
+  }
+  .input.is-error { border-color: var(--error); box-shadow: 0 0 0 1px var(--error); }
+  .field .err { display: flex; gap: 6px; align-items: flex-start; font-size: 14px; color: var(--error); line-height: 1.4; }
+  .item {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    min-height: 56px; padding: 12px 16px;
+    background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio-md);
+  }
+  .item b { font-weight: 500; }
+  .item span { color: var(--texto-suave); font-size: 14px; white-space: nowrap; }
+  .notice {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 12px 14px;
+    background: var(--superficie-alt); color: var(--texto);
+    border-radius: var(--radio-md);
+    font-size: 14px; line-height: 1.45;
+  }
+  .notice svg, .err svg { flex: none; margin-top: 2px; }
+  .ico { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- phone frames ---------- */
+  .screens { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; }
+  .phone { margin: 0; }
+  .phone figcaption { margin-top: 10px; text-align: center; font-size: 13px; color: var(--texto-suave); }
+  .device {
+    width: 312px; max-width: calc(100vw - 40px);
+    height: 640px;
+    padding: 10px;
+    border-radius: 40px;
+    background: #1b1a18;
+    box-shadow: 0 1px 2px rgb(31 30 28 / 0.08), 0 16px 40px rgb(31 30 28 / 0.12);
+  }
+  .screen {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 31px;
+    background: var(--fondo);
+    color: var(--texto);
+    font-family: var(--fuente-texto);
+    display: flex; flex-direction: column;
+    padding: 18px 18px 20px;
+  }
+  .bar { display: flex; align-items: center; justify-content: space-between; min-height: 40px; font-size: 15px; }
+  .bar .back { display: inline-flex; align-items: center; gap: 6px; color: var(--texto); }
+  .bar .brand { font-family: var(--fuente-titulos); font-weight: var(--peso-titulos); font-size: 15px; }
+  .s-title { margin: 14px 0 2px; font-family: var(--fuente-titulos); font-weight: var(--peso-titulos); font-size: 30px; line-height: 1.1; letter-spacing: var(--tracking-titulos); }
+  .s-sub { margin: 0 0 16px; color: var(--texto-suave); font-size: 14px; }
+  .grow { flex: 1; }
+  .days { display: flex; gap: 6px; margin: 16px 0 14px; }
+  .day {
+    flex: 1; display: grid; place-items: center; gap: 0;
+    min-height: 52px; padding: 6px 0;
+    border: 1px solid var(--borde); border-radius: var(--radio-sm);
+    background: var(--superficie); font-size: 12px; line-height: 1.2; color: var(--texto-suave);
+  }
+  .day b { font-size: 16px; font-weight: 600; color: var(--texto); }
+  .day.on { background: var(--acento); border-color: var(--acento); color: var(--acento-texto); }
+  .day.on b { color: var(--acento-texto); }
+  .slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  .slot {
+    display: grid; place-items: center; min-height: 44px;
+    border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm);
+    background: var(--superficie); font-size: 16px; font-variant-numeric: tabular-nums;
+  }
+  .slot.on { background: var(--acento-suave); border-color: var(--acento); box-shadow: inset 0 0 0 1px var(--acento); font-weight: 600; }
+  .slot.off { color: var(--texto-suave); text-decoration: line-through; background: transparent; border-style: dashed; }
+  .day-title { margin: 0 0 8px; font-weight: 600; font-size: 15px; }
+
+  /* ---------- A · Papel y tinta ---------- */
+  .dir-a {
+    --fondo: #FAF9F5; --superficie: #FFFFFF; --superficie-alt: #F0EEE6;
+    --borde: #E3DFD3; --borde-fuerte: #D3CEC0;
+    --texto: #1F1E1C; --texto-suave: #5E5B53;
+    --acento: #B5532F; --acento-hover: #9E4627; --acento-texto: #FFFFFF; --acento-suave: #F5E5DC;
+    --error: #A8372B;
+    --fuente-titulos: "Source Serif 4", Georgia, serif; --peso-titulos: 600; --tracking-titulos: -0.01em;
+    --fuente-texto: "Hanken Grotesk", system-ui, sans-serif;
+    --radio-sm: 10px; --radio-md: 12px; --radio-btn: 10px;
+  }
+  .dir-a .slot { font-family: "Source Serif 4", Georgia, serif; font-size: 18px; }
+  .dir-a .slot.on { font-weight: 600; }
+  .dir-a .done-mark {
+    display: grid; place-items: center;
+    width: 56px; height: 56px; margin: 40px 0 20px;
+    border-radius: 999px; background: var(--acento-suave); color: var(--acento);
+  }
+  .dir-a .done-mark .ico { width: 28px; height: 28px; stroke-width: 1.75; }
+  .dir-a .detail { margin: 20px 0 0; padding: 16px 0; border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); display: grid; gap: 6px; }
+  .dir-a .detail p { margin: 0; display: flex; justify-content: space-between; font-size: 15px; }
+  .dir-a .detail p span { color: var(--texto-suave); }
+  .dir-a .detail .big { font-family: "Source Serif 4", Georgia, serif; font-size: 22px; }
+  .firma-a { display: flex; gap: 10px; align-items: baseline; }
+  .firma-a span { font-family: "Source Serif 4", Georgia, serif; font-size: 32px; padding: 6px 14px; border: 1px solid var(--borde); border-radius: 10px; background: var(--superficie); font-variant-numeric: tabular-nums; }
+  .firma-a span.on { background: var(--acento-suave); border-color: var(--acento); }
+
+  /* ---------- B · Navaja y papel ---------- */
+  .dir-b {
+    --fondo: #F6F1E7; --superficie: #FFFDF8; --superficie-alt: #ECE4D3;
+    --borde: #D9CFBC; --borde-fuerte: #C7BBA4;
+    --texto: #1E1B18; --texto-suave: #5A5348;
+    --acento: #24456B; --acento-hover: #1B3654; --acento-texto: #FFFDF8; --acento-suave: #DFE6EE;
+    --firma-rojo: #B23A2E;
+    --error: #A8372B;
+    --fuente-titulos: "Fraunces", Georgia, serif; --peso-titulos: 600; --tracking-titulos: -0.015em;
+    --fuente-texto: "Instrument Sans", system-ui, sans-serif;
+    --radio-sm: 4px; --radio-md: 6px; --radio-btn: 4px;
+  }
+  .stripe {
+    height: 6px;
+    background: repeating-linear-gradient(135deg,
+      var(--firma-rojo) 0 6px, var(--fondo) 6px 12px,
+      var(--acento) 12px 18px, var(--fondo) 18px 24px);
+  }
+  .dir-b .screen { padding-top: 0; }
+  .dir-b .screen > .stripe { margin: 0 -18px 4px; }
+  .dir-b .days { gap: 0; border-bottom: 1px solid var(--borde); }
+  .dir-b .day { border: 0; border-radius: 0; background: transparent; border-bottom: 3px solid transparent; }
+  .dir-b .day.on { background: transparent; color: var(--texto); border-bottom-color: var(--firma-rojo); }
+  .dir-b .day.on b { color: var(--texto); }
+  .dir-b .slot { font-weight: 500; }
+  .dir-b .slot.on { background: var(--acento); color: var(--acento-texto); box-shadow: none; }
+  .dir-b .s-title { font-size: 32px; }
+  .ticket {
+    position: relative;
+    margin: 28px 0 0;
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    -webkit-mask: radial-gradient(circle 10px at 0 62%, transparent 9.5px, #000 10px) left / 51% 100% no-repeat,
+                  radial-gradient(circle 10px at 100% 62%, transparent 9.5px, #000 10px) right / 51% 100% no-repeat;
+            mask: radial-gradient(circle 10px at 0 62%, transparent 9.5px, #000 10px) left / 51% 100% no-repeat,
+                  radial-gradient(circle 10px at 100% 62%, transparent 9.5px, #000 10px) right / 51% 100% no-repeat;
+  }
+  .ticket .stripe { border-radius: 6px 6px 0 0; }
+  .ticket .top { padding: 18px 18px 22px; }
+  .ticket .top p { margin: 0; }
+  .ticket .k { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--texto-suave); }
+  .ticket .v { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 24px; line-height: 1.2; }
+  .ticket .cut { border-top: 2px dashed var(--borde); margin: 0 16px; }
+  .ticket .bottom { padding: 16px 18px 18px; display: flex; justify-content: space-between; font-size: 14px; color: var(--texto-suave); }
+  .ticket .bottom b { color: var(--texto); font-weight: 600; }
+  .dir-b .ok-title { margin: 22px 0 4px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 34px; line-height: 1.1; }
+  .dir-b .ok-text { margin: 0; font-size: 15px; }
+  .firma-b { display: grid; gap: 14px; max-width: 360px; }
+  .firma-b .ticket { margin: 0; }
+
+  /* ---------- C · Barrio de noche ---------- */
+  .dir-c {
+    --fondo: #1A1714; --superficie: #24201B; --superficie-alt: #2B261F;
+    --borde: #3A332B; --borde-fuerte: #4A4137;
+    --texto: #F3EDE2; --texto-suave: #B9AF9F;
+    --acento: #D4AE68; --acento-hover: #E2C185; --acento-texto: #1A1714; --acento-suave: #3A2F1E;
+    --error: #F2907F;
+    --fuente-titulos: "Instrument Serif", Georgia, serif; --peso-titulos: 400; --tracking-titulos: -0.01em;
+    --fuente-texto: "Geist", system-ui, sans-serif;
+    --radio-sm: 2px; --radio-md: 2px; --radio-btn: 2px;
+  }
+  .dir-c .dir-name { font-style: italic; font-size: clamp(44px, 9vw, 76px); }
+  .dir-c .device { background: #0e0d0b; }
+  .dir-c .s-title { font-size: 42px; font-style: italic; line-height: 1; margin-top: 10px; }
+  .dir-c .bar .brand { font-style: italic; font-size: 18px; color: var(--acento); }
+  .dir-c .days { gap: 12px; margin: 12px 0 10px; }
+  .dir-c .day { flex: none; min-width: 32px; min-height: 44px; border: 0; background: transparent; padding: 0 0 4px; place-items: start; align-content: end; border-bottom: 1px solid transparent; border-radius: 0; }
+  .dir-c .day.on { background: transparent; border-bottom-color: var(--acento); color: var(--acento); }
+  .dir-c .day.on b { color: var(--acento); }
+  .dir-c .times { display: grid; margin: 0 0 16px; border-top: 1px solid var(--borde); }
+  .dir-c .time {
+    display: flex; justify-content: space-between; align-items: baseline;
+    min-height: 44px; padding: 6px 2px;
+    border-bottom: 1px solid var(--borde);
+    font-family: "Instrument Serif", Georgia, serif; font-size: 27px; line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .dir-c .time small { font-family: "Geist", system-ui, sans-serif; font-size: 13px; color: var(--texto-suave); }
+  .dir-c .time.on { color: var(--acento); }
+  .dir-c .time.on small { color: var(--acento); }
+  .dir-c .time.off { color: var(--texto-suave); text-decoration: line-through; text-decoration-thickness: 1px; }
+  .dir-c .notice { background: transparent; border: 1px solid var(--borde); color: var(--texto-suave); }
+  .dir-c .huge { margin: 36px 0 0; font-family: "Instrument Serif", Georgia, serif; font-size: 96px; line-height: 0.9; letter-spacing: -0.02em; color: var(--acento); font-variant-numeric: tabular-nums; }
+  .dir-c .huge-sub { margin: 8px 0 24px; font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-size: 28px; }
+  .dir-c .brass { height: 1px; background: var(--acento); margin: 0 0 18px; width: 64px; }
+  .dir-c .ok-title { margin: 0 0 6px; font-weight: 600; font-size: 15px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--texto-suave); }
+  .firma-c { display: flex; align-items: flex-end; gap: 16px; }
+  .firma-c .huge { margin: 0; font-size: 80px; }
+
+  /* ---------- experience options ---------- */
+  .opciones { max-width: 1120px; margin: 0 auto; padding: 56px 20px 72px; }
+  .opciones h2 { margin: 0 0 8px; font-family: "Source Serif 4", Georgia, serif; font-weight: 600; font-size: 32px; line-height: 1.15; }
+  .opciones > p { margin: 0 0 24px; color: var(--page-suave); max-width: 62ch; }
+  .opts { display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; }
+  @media (min-width: 760px) { .opts { grid-template-columns: 1fr 1fr; } }
+  .opts li { padding: 20px; background: #fff; border: 1px solid var(--page-borde); border-radius: 12px; }
+  .opts h3 { margin: 0 0 6px; font-size: 17px; }
+  .opts p { margin: 0 0 10px; color: var(--page-suave); font-size: 15px; }
+  .opts .rec { margin: 0; color: var(--page-texto); font-size: 15px; }
+  .opts .rec b { color: var(--page-acento); font-weight: 600; }
+  .legend { margin-top: 32px; padding: 20px; border-left: 3px solid var(--page-acento); background: #F0EEE6; border-radius: 0 12px 12px 0; }
+  .legend p { margin: 0; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="intro">
+  <p class="kicker">Etapa 4 · Experiencia</p>
+  <h1>Tres maneras de vestir tu app</h1>
+  <p>Son las mismas pantallas de tu reserva, con los textos que aprobaste, en tres estilos distintos. Elige el que más se parezca a tu barbería, o mezcla: «la letra de A con los colores de C».</p>
+  <ul class="jump">
+    <li><a href="#a"><b>A</b> Papel y tinta</a></li>
+    <li><a href="#b"><b>B</b> Navaja y papel</a></li>
+    <li><a href="#c"><b>C</b> Barrio de noche</a></li>
+    <li><a href="#opciones">Opciones extra</a></li>
+  </ul>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5h.01"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+</svg>
+
+<!-- ======================= A ======================= -->
+<section class="dir dir-a" id="a" aria-labelledby="a-name">
+  <div class="dir-inner">
+    <p class="dir-letter">Dirección A · Casa</p>
+    <h2 class="dir-name" id="a-name">Papel y tinta</h2>
+    <p class="dir-feel">Cálido y sereno, como una agenda de papel bien cuidada. Letras de libro, mucho aire y un solo toque terracota. El más clásico y el que mejor se lee en el móvil.</p>
+
+    <div class="dir-body">
+      <div>
+        <h3 class="label">Colores</h3>
+        <ul class="swatches">
+          <li><span class="sw" style="background:var(--fondo)"></span><span>Fondo<small>papel marfil</small></span></li>
+          <li><span class="sw" style="background:var(--superficie)"></span><span>Tarjetas<small>blanco limpio</small></span></li>
+          <li><span class="sw" style="background:var(--texto)"></span><span>Texto<small>tinta cálida</small></span></li>
+          <li><span class="sw" style="background:var(--acento)"></span><span>Botón principal<small>terracota</small></span></li>
+          <li><span class="sw" style="background:var(--acento-suave)"></span><span>Lo elegido<small>terracota suave</small></span></li>
+          <li><span class="sw" style="background:var(--superficie-alt)"></span><span>Avisos<small>papel tostado</small></span></li>
+        </ul>
+
+        <h3 class="label">Letras</h3>
+        <div class="specimen">
+          <p class="t">¿Qué te hacemos hoy?</p>
+          <p class="p">Reserva tu cita en menos de un minuto, a cualquier hora, sin llamar.</p>
+          <p class="m">Títulos con letra de libro (Source Serif) · texto con una letra clara y cálida (Hanken Grotesk)</p>
+        </div>
+
+        <h3 class="label">Firma</h3>
+        <div class="firma-a" aria-hidden="true"><span class="on">10:00</span><span>10:30</span><span>11:00</span></div>
+        <p class="firma-note">Las horas se escriben con números de libro, como en una agenda de papel. Solo en las horas y en la confirmación.</p>
+
+        <h3 class="label">Piezas</h3>
+        <div class="pieces">
+          <div class="row"><a class="btn primary" href="#a">Continuar</a><a class="btn secondary" href="#a">Volver</a></div>
+          <div class="item"><b>Corte</b><span>30 min · 15 €</span></div>
+          <div class="field">
+            <label>Correo</label>
+            <div class="input is-error">ana@correo</div>
+            <div class="err"><svg class="ico" width="16" height="16"><use href="#i-alert"/></svg>Correo o contraseña incorrectos</div>
+          </div>
+          <div class="notice"><svg class="ico"><use href="#i-info"/></svg>Si alguien toma la hora antes que tú, te lo avisamos y eliges otra.</div>
+        </div>
+      </div>
+
+      <div class="screens">
+        <figure class="phone">
+          <div class="device"><div class="screen">
+            <div class="bar"><span class="back"><svg class="ico"><use href="#i-back"/></svg>Volver</span><span class="brand">Barbería Navaja</span></div>
+            <h4 class="s-title">Elige cuándo</h4>
+            <p class="s-sub">Corte · 30 min · 15 €</p>
+            <div class="field">
+              <label>Barbero</label>
+              <div class="input">Cualquiera <svg class="ico"><use href="#i-down"/></svg></div>
+            </div>
+            <div class="days">
+              <div class="day">lun<b>13</b></div><div class="day on">mar<b>14</b></div><div class="day">mié<b>15</b></div><div class="day">jue<b>16</b></div><div class="day">vie<b>17</b></div>
+            </div>
+            <p class="day-title">Martes 14</p>
+            <div class="slots">
+              <div class="slot on">10:00</div><div class="slot">10:30</div><div class="slot">11:00</div>
+              <div class="slot off" aria-label="11:30, ocupada">11:30</div><div class="slot">12:30</div>
+            </div>
+            <div class="notice"><svg class="ico"><use href="#i-info"/></svg>Si alguien toma la hora antes que tú, te lo avisamos y eliges otra.</div>
+            <div class="grow"></div>
+            <span class="btn primary block">Confirmar reserva</span>
+          </div></div>
+          <figcaption>P02 · Elegir día y hora</figcaption>
+        </figure>
+
+        <figure class="phone">
+          <div class="device"><div class="screen">
+            <div class="bar"><span></span><span class="brand">Barbería Navaja</span></div>
+            <div class="done-mark"><svg class="ico"><use href="#i-check"/></svg></div>
+            <h4 class="s-title">¡Listo!</h4>
+            <p class="s-sub" style="font-size:16px;color:var(--texto)">Corte con Marco, martes 14 a las 10:00. Te enviamos un correo con los detalles.</p>
+            <div class="detail">
+              <p><span>Día</span>Martes 14</p>
+              <p><span>Hora</span><b class="big">10:00</b></p>
+              <p><span>Barbero</span>Marco</p>
+              <p><span>Servicio</span>Corte · 15 €</p>
+            </div>
+            <div class="grow"></div>
+            <span class="btn primary block">Ver mis citas</span>
+          </div></div>
+          <figcaption>P03 · Reserva confirmada</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= B ======================= -->
+<section class="dir dir-b" id="b" aria-labelledby="b-name">
+  <div class="stripe" aria-hidden="true"></div>
+  <div class="dir-inner">
+    <p class="dir-letter">Dirección B · Casa + mundo</p>
+    <h2 class="dir-name" id="b-name">Navaja y papel</h2>
+    <p class="dir-feel">El mismo calor, con el oficio dentro: la raya del poste de barbero, un azul marino de bata antigua y la confirmación como un ticket de los de antes. Se siente de barbería sin perder la calma.</p>
+
+    <div class="dir-body">
+      <div>
+        <h3 class="label">Colores</h3>
+        <ul class="swatches">
+          <li><span class="sw" style="background:var(--fondo)"></span><span>Fondo<small>papel manila</small></span></li>
+          <li><span class="sw" style="background:var(--superficie)"></span><span>Tarjetas<small>crema</small></span></li>
+          <li><span class="sw" style="background:var(--texto)"></span><span>Texto<small>tinta</small></span></li>
+          <li><span class="sw" style="background:var(--acento)"></span><span>Botón principal<small>azul marino</small></span></li>
+          <li><span class="sw" style="background:var(--firma-rojo)"></span><span>Solo la raya<small>rojo barbero</small></span></li>
+          <li><span class="sw" style="background:var(--superficie-alt)"></span><span>Avisos<small>papel tostado</small></span></li>
+        </ul>
+
+        <h3 class="label">Letras</h3>
+        <div class="specimen">
+          <p class="t">¿Qué te hacemos hoy?</p>
+          <p class="p">Reserva tu cita en menos de un minuto, a cualquier hora, sin llamar.</p>
+          <p class="m">Títulos con una letra de rótulo antiguo, suave (Fraunces) · texto nítido y moderno (Instrument Sans)</p>
+        </div>
+
+        <h3 class="label">Firma</h3>
+        <div class="firma-b" aria-hidden="true">
+          <div class="stripe"></div>
+          <div class="ticket">
+            <div class="stripe"></div>
+            <div class="top"><p class="k">Tu cita</p><p class="v">Martes 14 · 10:00</p></div>
+            <div class="cut"></div>
+            <div class="bottom"><span>Corte con <b>Marco</b></span><span><b>15 €</b></span></div>
+          </div>
+        </div>
+        <p class="firma-note">La raya del poste de barbero arriba de cada pantalla y como barra de carga; la confirmación es un ticket troquelado. En ningún otro lugar.</p>
+
+        <h3 class="label">Piezas</h3>
+        <div class="pieces">
+          <div class="row"><a class="btn primary" href="#b">Continuar</a><a class="btn secondary" href="#b">Volver</a></div>
+          <div class="item"><b>Corte</b><span>30 min · 15 €</span></div>
+          <div class="field">
+            <label>Correo</label>
+            <div class="input is-error">ana@correo</div>
+            <div class="err"><svg class="ico" width="16" height="16"><use href="#i-alert"/></svg>Correo o contraseña incorrectos</div>
+          </div>
+          <div class="notice"><svg class="ico"><use href="#i-info"/></svg>Si alguien toma la hora antes que tú, te lo avisamos y eliges otra.</div>
+        </div>
+      </div>
+
+      <div class="screens">
+        <figure class="phone">
+          <div class="device"><div class="screen">
+            <div class="stripe" aria-hidden="true"></div>
+            <div class="bar"><span class="back"><svg class="ico"><use href="#i-back"/></svg>Volver</span><span class="brand">Barbería Navaja</span></div>
+            <h4 class="s-title">Elige cuándo</h4>
+            <p class="s-sub">Corte · 30 min · 15 €</p>
+            <div class="field">
+              <label>Barbero</label>
+              <div class="input">Cualquiera <svg class="ico"><use href="#i-down"/></svg></div>
+            </div>
+            <div class="days">
+              <div class="day">lun<b>13</b></div><div class="day on">mar<b>14</b></div><div class="day">mié<b>15</b></div><div class="day">jue<b>16</b></div><div class="day">vie<b>17</b></div>
+            </div>
+            <p class="day-title">Martes 14</p>
+            <div class="slots">
+              <div class="slot on">10:00</div><div class="slot">10:30</div><div class="slot">11:00</div>
+              <div class="slot off" aria-label="11:30, ocupada">11:30</div><div class="slot">12:30</div>
+            </div>
+            <div class="notice"><svg class="ico"><use href="#i-info"/></svg>Si alguien toma la hora antes que tú, te lo avisamos y eliges otra.</div>
+            <div class="grow"></div>
+            <span class="btn primary block">Confirmar reserva</span>
+          </div></div>
+          <figcaption>P02 · Elegir día y hora</figcaption>
+        </figure>
+
+        <figure class="phone">
+          <div class="device"><div class="screen">
+            <div class="stripe" aria-hidden="true"></div>
+            <div class="bar"><span></span><span class="brand">Barbería Navaja</span></div>
+            <h4 class="ok-title">¡Listo!</h4>
+            <p class="ok-text">Corte con Marco, martes 14 a las 10:00. Te enviamos un correo con los detalles.</p>
+            <div class="ticket">
+              <div class="stripe"></div>
+              <div class="top"><p class="k">Tu cita</p><p class="v">Martes 14 · 10:00</p></div>
+              <div class="cut"></div>
+              <div class="bottom"><span>Corte con <b>Marco</b></span><span><b>15 €</b></span></div>
+            </div>
+            <div class="grow"></div>
+            <span class="btn primary block">Ver mis citas</span>
+          </div></div>
+          <figcaption>P03 · Reserva confirmada</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= C ======================= -->
+<section class="dir dir-c" id="c" aria-labelledby="c-name">
+  <div class="dir-inner">
+    <p class="dir-letter">Dirección C · Salto</p>
+    <h2 class="dir-name" id="c-name">Barrio de noche</h2>
+    <p class="dir-feel">Oscuro y con carácter, como la barbería con la persiana a medio bajar. Letras grandes y elegantes, un dorado viejo de latón y las horas escritas enormes. El más atrevido.</p>
+
+    <div class="dir-body">
+      <div>
+        <h3 class="label">Colores</h3>
+        <ul class="swatches">
+          <li><span class="sw" style="background:var(--fondo)"></span><span>Fondo<small>café oscuro</small></span></li>
+          <li><span class="sw" style="background:var(--superficie)"></span><span>Tarjetas<small>madera oscura</small></span></li>
+          <li><span class="sw" style="background:var(--texto)"></span><span>Texto<small>hueso</small></span></li>
+          <li><span class="sw" style="background:var(--acento)"></span><span>Botón principal<small>latón</small></span></li>
+          <li><span class="sw" style="background:var(--texto-suave)"></span><span>Texto secundario<small>arena</small></span></li>
+          <li><span class="sw" style="background:var(--borde)"></span><span>Líneas<small>sombra</small></span></li>
+        </ul>
+
+        <h3 class="label">Letras</h3>
+        <div class="specimen">
+          <p class="t" style="font-style:italic;font-size:38px">¿Qué te hacemos hoy?</p>
+          <p class="p">Reserva tu cita en menos de un minuto, a cualquier hora, sin llamar.</p>
+          <p class="m">Títulos grandes de revista, en cursiva (Instrument Serif) · texto preciso (Geist)</p>
+        </div>
+
+        <h3 class="label">Firma</h3>
+        <div class="firma-c" aria-hidden="true"><p class="huge">10:00</p></div>
+        <p class="firma-note">La hora elegida, escrita enorme en latón, y una línea fina dorada como un filo. Solo en las horas y en la confirmación.</p>
+
+        <h3 class="label">Piezas</h3>
+        <div class="pieces">
+          <div class="row"><a class="btn primary" href="#c">Continuar</a><a class="btn secondary" href="#c">Volver</a></div>
+          <div class="item"><b>Corte</b><span>30 min · 15 €</span></div>
+          <div class="field">
+            <label>Correo</label>
+            <div class="input is-error">ana@correo</div>
+            <div class="err"><svg class="ico" width="16" height="16"><use href="#i-alert"/></svg>Correo o contraseña incorrectos</div>
+          </div>
+          <div class="notice"><svg class="ico"><use href="#i-info"/></svg>Si alguien toma la hora antes que tú, te lo avisamos y eliges otra.</div>
+        </div>
+      </div>
+
+      <div class="screens">
+        <figure class="phone">
+          <div class="device"><div class="screen">
+            <div class="bar"><span class="back"><svg class="ico"><use href="#i-back"/></svg>Volver</span><span class="brand">Barbería Navaja</span></div>
+            <h4 class="s-title">Elige cuándo</h4>
+            <div class="days">
+              <div class="day">lun<b>13</b></div><div class="day on">mar<b>14</b></div><div class="day">mié<b>15</b></div><div class="day">jue<b>16</b></div><div class="day">vie<b>17</b></div>
+            </div>
+            <p class="day-title">Martes 14 <span style="color:var(--texto-suave);font-weight:400">· Barbero: Cualquiera</span></p>
+            <div class="times">
+              <div class="time on">10:00 <small>elegida</small></div>
+              <div class="time">10:30 <small>libre</small></div>
+              <div class="time">11:00 <small>libre</small></div>
+              <div class="time off">11:30 <small>ocupada</small></div>
+              <div class="time">12:30 <small>libre</small></div>
+            </div>
+            <div class="notice"><svg class="ico"><use href="#i-info"/></svg>Si alguien toma la hora antes que tú, te lo avisamos y eliges otra.</div>
+            <div class="grow"></div>
+            <span class="btn primary block">Confirmar reserva</span>
+          </div></div>
+          <figcaption>P02 · Elegir día y hora</figcaption>
+        </figure>
+
+        <figure class="phone">
+          <div class="device"><div class="screen">
+            <div class="bar"><span></span><span class="brand">Barbería Navaja</span></div>
+            <p class="huge">10:00</p>
+            <p class="huge-sub">martes 14</p>
+            <div class="brass"></div>
+            <p class="ok-title">¡Listo!</p>
+            <p style="margin:0;font-size:15px">Corte con Marco, martes 14 a las 10:00. Te enviamos un correo con los detalles.</p>
+            <div class="grow"></div>
+            <span class="btn primary block">Ver mis citas</span>
+          </div></div>
+          <figcaption>P03 · Reserva confirmada</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= options ======================= -->
+<section class="opciones" id="opciones" aria-labelledby="op-title">
+  <h2 id="op-title">Opciones extra</h2>
+  <p>Valen para cualquiera de los tres estilos. Cada una tiene su consecuencia; te digo cuál recomiendo para tu primera versión.</p>
+  <ul class="opts">
+    <li>
+      <h3>Versión oscura para la noche</h3>
+      <p>La app cambia sola a fondo oscuro cuando el teléfono lo está. Cada pantalla se diseña y se prueba dos veces: un poco más de trabajo.</p>
+      <p class="rec"><b>Recomiendo:</b> no por ahora con A o B; con C ya viene incluida.</p>
+    </li>
+    <li>
+      <h3>Instalable en el móvil</h3>
+      <p>Tus clientes la guardan como un icono en la pantalla de inicio, sin pasar por la tienda de aplicaciones. Poco trabajo extra.</p>
+      <p class="rec"><b>Recomiendo:</b> sí; tus clientes vuelven cada mes.</p>
+    </li>
+    <li>
+      <h3>Fotos del local</h3>
+      <p>Fotos reales de tu barbería y de tus barberos en la portada y en cada barbero. Necesitamos que nos las pases.</p>
+      <p class="rec"><b>Recomiendo:</b> empezar sin fotos (solo letras y la firma) y añadirlas cuando las tengas.</p>
+    </li>
+    <li>
+      <h3>Movimiento</h3>
+      <p>Sobrio: los cambios aparecen con suavidad. Más expresivo: transiciones más vistosas, que en teléfonos lentos pueden ir a saltos.</p>
+      <p class="rec"><b>Recomiendo:</b> sobrio.</p>
+    </li>
+  </ul>
+  <div class="legend"><p>Recomiendo <b>B · Navaja y papel</b>: se siente de tu barbería sin perder calma, y el ticket hace que la confirmación se recuerde. ¿Cuál te gusta más? También puedes mezclar.</p></div>
+</section>
+
+</body>
+</html>

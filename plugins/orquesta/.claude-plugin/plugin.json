@@ -1,10 +1,10 @@
 {
   "name": "orquesta",
   "displayName": "Orquesta",
-  "version": "1.0.0",
-  "description": "A single vibe-coding system for people who don't program. You talk to one orchestrator in plain language; it guides you through vision, features, logic, experience and implementation, then delegates to a technical architect, frontend and backend builders and a reviewer. A test lead with four testers evaluates every phase against your specs, and built-in project memory reaches every agent.",
+  "version": "1.1.0",
+  "description": "A single vibe-coding system for people who don't program. You talk to one orchestrator in plain language; it guides you through vision, features, logic, experience and implementation, lets you pick the look of your app from three visual directions by a designer (warm, editorial house style), then delegates to a technical architect, frontend and backend builders and a reviewer. A test lead with four testers evaluates every phase against your specs, and built-in project memory reaches every agent.",
   "author": {
     "name": "Alexander Bozo"
   },
-  "keywords": ["orchestrator", "subagents", "vibe-coding", "no-code", "flowchart", "excalidraw", "mermaid", "testing", "memory"]
+  "keywords": ["orchestrator", "subagents", "vibe-coding", "no-code", "flowchart", "excalidraw", "mermaid", "design-system", "testing", "memory"]
 }

@@ -34,6 +34,8 @@ docs/producto/
   glosario.md
 ```
 
+How the app looks (directions, design system) lives in `docs/diseno/`, written by the designer from the screens agreed here: see the `orquesta:diseno` skill.
+
 ## Tools
 
 A hook regenerates the views whenever a `.flow.json` or `.visual.json` is saved. To run it by hand:

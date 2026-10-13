@@ -1,6 +1,6 @@
 # Visión del sistema de agentes · v1
 
-> **Estado:** implementado en [`plugins/orquesta`](../../plugins/orquesta/) (v1.0). Este documento explica el diseño; el [README del plugin](../../plugins/orquesta/README.md) explica la instalación y el uso. Las decisiones de la sección 16 se tomaron con las recomendaciones, salvo el empaquetado: es un **sistema único** (un solo plugin) que reemplaza a los plugins anteriores.
+> **Estado:** implementado en [`plugins/orquesta`](../../plugins/orquesta/) (v1.1: diseñador y estilo de la casa; ver sección 18). Este documento explica el diseño; el [README del plugin](../../plugins/orquesta/README.md) explica la instalación y el uso. Las decisiones de la sección 16 se tomaron con las recomendaciones, salvo el empaquetado: es un **sistema único** (un solo plugin) que reemplaza a los plugins anteriores.
 
 Este documento es el mapa general. Dos temas tienen su propio documento:
 
@@ -22,7 +22,7 @@ Diagramas (ábrelos en [excalidraw.com](https://excalidraw.com) con *Open*, o co
 
 ## 1. En una frase
 
-Tú le cuentas al **orquestador**, en tus palabras, qué app quieres. Él te acompaña por **cinco etapas** para que veas la visión, las funcionalidades, la lógica, las pantallas y el plan antes de construir nada. Después, un **equipo técnico** traduce todo eso a documentación técnica, **builders especializados** (frontend y backend) lo construyen por fases, y un **equipo de pruebas** evalúa cada fase contra lo que tú pediste. Todos trabajan con la **memoria del proyecto**, y tú recibes los resultados en lenguaje simple.
+Tú le cuentas al **orquestador**, en tus palabras, qué app quieres. Él te acompaña por **cinco etapas** para que veas la visión, las funcionalidades, la lógica, las pantallas (y elijas su aspecto entre tres estilos que te propone un **diseñador**) y el plan antes de construir nada. Después, un **equipo técnico** traduce todo eso a documentación técnica, **builders especializados** (frontend y backend) lo construyen por fases, y un **equipo de pruebas** evalúa cada fase contra lo que tú pediste. Todos trabajan con la **memoria del proyecto**, y tú recibes los resultados en lenguaje simple.
 
 ![Arquitectura](diagramas/01-arquitectura.png)
 
@@ -39,6 +39,7 @@ Tú le cuentas al **orquestador**, en tus palabras, qué app quieres. Él te aco
 | Dividir al programador en especialistas | **Builder frontend** y **builder backend**, coordinados por un **contrato** que define el arquitecto técnico. Más especialistas opcionales (móvil, integraciones, despliegue) |
 | Un sistema de pruebas robusto y orientado a specs | **Cuatro niveles de prueba**, un **jefe de pruebas** que orquesta a **cuatro testers** especializados, y un **registro de fallos** donde cada fallo queda como prueba permanente ([sistema de pruebas](SISTEMA-DE-PRUEBAS.md)) |
 | Poder probar una app ya hecha | **Modo auditoría:** el equipo de pruebas describe lo que hace la app, tú lo confirmas y se evalúa entera |
+| (v1.1) Un frontend con una estética predefinida, tipo Anthropic, pero original y con opciones | **Diseñador** y **estilo de la casa:** tres direcciones con tus pantallas reales (fiel a la casa, con el mundo de tu producto, un salto) y un **sistema de diseño** que el builder frontend implementa y el reviewer verifica (sección 4) |
 
 ---
 
@@ -46,7 +47,7 @@ Tú le cuentas al **orquestador**, en tus palabras, qué app quieres. Él te aco
 
 1. **Una sola voz.** Hablas con un único agente. Los demás nunca te piden nada directamente.
 2. **Tú decides qué; el equipo decide cómo.** Tú defines qué hace la app y cómo se siente. Las tecnologías y la estructura del código las decide el equipo técnico. Solo te consulta cuando una decisión técnica te afecta: costo, plataformas, privacidad o tiempos.
-3. **Ver antes de construir.** Nada se construye hasta que viste y aprobaste la funcionalidad, su lógica y sus pantallas.
+3. **Ver antes de construir.** Nada se construye hasta que viste y aprobaste la funcionalidad, su lógica, sus pantallas y su aspecto.
 4. **Dos capas, una verdad.** Tu documentación y la técnica describen lo mismo con distinto lenguaje. Cada pieza técnica apunta a una funcionalidad tuya por su id.
 5. **Nadie se califica a sí mismo.** Los builders construyen, el reviewer revisa cada paquete y el equipo de pruebas evalúa cada fase.
 6. **Nada se olvida.** Cada fallo encontrado se convierte en una prueba que se ejecuta para siempre.
@@ -62,8 +63,9 @@ Tú le cuentas al **orquestador**, en tus palabras, qué app quieres. Él te aco
 | --- | --- | --- | --- |
 | **Orquestador** (hilo principal) | Conversa contigo por etapas, escribe tu capa de producto, traduce, delega, hace cumplir los gates y te reporta en lenguaje simple | `docs/producto/**` y el estado del tablero. Lee con propósito: archivos concretos sí; exploraciones amplias, archivos enormes y registros, al scout | `opus` |
 | **Scout** | Lee el código existente y responde preguntas concretas | Nada | `haiku` |
+| **Diseñador** | En la etapa 4 propone tres direcciones visuales con tus pantallas; con tu elección escribe el sistema de diseño (tokens, componentes, referencia navegable) y lo ajusta en cambios solo visuales | `docs/diseno/**` | `opus` |
 | **Arquitecto técnico** | Traduce tu capa de producto a la capa técnica: tecnologías, datos, **contrato frontend↔backend**, spec técnica por funcionalidad y paquetes de trabajo por especialidad | `docs/tecnico/**` | `opus` |
-| **Builder frontend** | Pantallas, navegación, formularios, estilos: lo que ves y tocas. Habla con el backend solo a través del contrato | Código de frontend + sus pruebas rápidas | `sonnet` |
+| **Builder frontend** | Pantallas, navegación, formularios, estilos: lo que ves y tocas. Habla con el backend solo a través del contrato y viste las pantallas solo con el sistema de diseño | Código de frontend + sus pruebas rápidas | `sonnet` |
 | **Builder backend** | Servidor, datos, reglas de negocio, permisos, pagos, correos | Código de backend + sus pruebas rápidas | `sonnet` |
 | **Reviewer** | Revisa cada paquete: ejecuta todas las pruebas, contrasta con la spec técnica y con tu funcionalidad, vigila el alcance. PASS o FAIL | Nada | `opus` |
 | **Jefe de pruebas** | Orquesta la evaluación de cada fase: arma el plan desde tus specs, lo reparte entre los testers, consolida y decide. Lleva el registro de fallos | `docs/pruebas/**` | `opus` |
@@ -77,6 +79,16 @@ Tú le cuentas al **orquestador**, en tus palabras, qué app quieres. Él te aco
 - **Contexto más limpio:** cada builder recibe solo las convenciones, archivos y reglas de su lado. Esto reduce errores.
 - **Paralelismo natural:** el frontend y el backend de una misma funcionalidad tocan archivos distintos, así que pueden construirse a la vez.
 - **El contrato es el punto de encuentro:** antes de construir, el arquitecto técnico escribe en `docs/tecnico/contrato-api.md` qué datos se piden y se devuelven en cada operación. El frontend construye contra ese contrato y el backend lo cumple. Si uno de los dos necesita cambiarlo, se detiene y lo reporta (`CONTRACT GAP`); el arquitecto ajusta el contrato y los dos siguen. Ninguno lo cambia por su cuenta.
+- **Cada uno guarda solo lo suyo:** como comparten la carpeta, cuando un paquete pasa la revisión y el otro sigue abierto, el orquestador guarda (commit) solo los archivos de ese paquete, que el reviewer lista.
+
+### Por qué un diseñador aparte, y cómo se coordina con el frontend
+
+Crear un estilo y construir pantallas son trabajos distintos, con criterios distintos. Si el builder frontend también inventara el aspecto, cada paquete (hecho por una invocación nueva) lo reinventaría a su manera y la app acabaría pareciendo de varias manos, o con el aspecto genérico de las apps generadas.
+
+- **Estilo de la casa:** una estética por defecto cálida, editorial y serena, inspirada en el lenguaje visual de Anthropic (papel, letras de libro, un acento terroso, aire, movimiento sobrio), con una lista de lo que nunca se hace. Inspirada, no copiada: nunca su marca ni sus tipografías comerciales. Si traes tu marca, tu marca manda.
+- **Original en cada proyecto:** el diseñador propone tres **direcciones** con tus pantallas y textos reales: A · fiel a la casa, B · la casa con el mundo de tu producto, C · un salto más atrevido. Cada una con una **firma** propia (en la barbería: la raya del poste y la confirmación como ticket) y, aparte, **opciones de experiencia** (modo oscuro, instalable en el móvil, fotos, movimiento) con su consecuencia.
+- **El sistema de diseño es el segundo contrato del frontend:** con tu elección, el diseñador escribe `docs/diseno/` (tokens validados por un hook, componentes con todos sus estados y una referencia navegable de todas las pantallas). El builder frontend lo implementa con tokens y componentes base, sin valores sueltos; si algo visible no está cubierto, se detiene (`DESIGN GAP`). El reviewer y el tester de experiencia lo verifican.
+- **A veces, el frontend va por separado:** un cambio solo visual pasa por el diseñador y se convierte en paquetes solo de frontend; el backend y el contrato no se tocan.
 
 ### Por qué el orquestador es el hilo principal
 
@@ -112,6 +124,10 @@ docs/
     4-experiencia/                pantallas y bocetos
     5-plan-de-fases.md            qué tendrás al final de cada fase
     glosario.md                   los pocos términos técnicos inevitables, explicados
+  diseno/                       DISEÑO · lo escribe el diseñador, con tu elección
+    direcciones.html              tres estilos con tus pantallas, para elegir
+    tokens.json → tokens.css      colores, letras, espacios y movimiento (validados)
+    sistema.md · referencia.html  componentes, estados y tu app navegable
   tecnico/                      CAPA TÉCNICA · la escribe el arquitecto técnico
     arquitectura.md · datos.md · contrato-api.md
     specs/FUN-03-iniciar-sesion.md
@@ -148,7 +164,7 @@ Tu trabajo es **contar, ver, decidir y probar**. El detalle está en **[Conversa
 | 1 · Visión | La ficha de la idea y un mapa de personas | Si la idea quedó bien contada |
 | 2 · Funcionalidades | El catálogo, con prioridades | Qué entra en la primera versión |
 | 3 · Lógica | Un diagrama de flujo por funcionalidad | Aprobar cada flujo |
-| 4 · Experiencia | Bocetos de las pantallas | Si se siente como la imaginas |
+| 4 · Experiencia | Bocetos de las pantallas, tres estilos y tu app navegable en el elegido | Qué estilo y si se siente como la imaginas |
 | 5 · Implementación | Las fases: "Fase 1: ya podrás…" | Luz verde y el modo |
 
 **Modos de construcción:**
@@ -169,14 +185,14 @@ En cualquier momento puedes decir "para aquí", "sigue de un tiro" o "¿cómo va
 
 | Bloque | Quién | Resultado | Gate |
 | --- | --- | --- | --- |
-| Etapas 1–5 | Orquestador ↔ tú | Tu capa de producto completa y aprobada. Sync de memoria (una spec aprobada es un hito para tu skill) | Tú: luz verde y modo |
+| Etapas 1–5 | Orquestador ↔ tú (diseñador en la etapa 4) | Tu capa de producto y tu diseño completos y aprobados. Sync de memoria (una spec aprobada es un hito para tu skill) | Tú: luz verde y modo |
 | Preparación técnica | Arquitecto técnico → orquestador | Capa técnica + paquetes. El orquestador comprueba que cada funcionalidad y cada criterio tienen paquete y prueba prevista, y te da un resumen de 5 líneas | Cobertura completa |
 | Construcción (por paquete) | Builder frontend o backend → reviewer | Código + pruebas rápidas (nivel 1) + revisión (nivel 2) | Reviewer: PASS |
 | Evaluación de fase | Jefe de pruebas + testers | Informe por funcionalidad + registro de fallos al día (nivel 3) | Jefe de pruebas: la fase pasa |
-| Cierre de fase | Orquestador → archiver | Memoria sincronizada, informe y demo para ti | Tú (en modo por fases) |
+| Cierre de fase | Orquestador → archiver | Memoria sincronizada, informe y demo para ti, fase integrada en la rama base | Tú (en modo por fases) |
 | Final | Jefe de pruebas + testers | Evaluación de la app completa (nivel 4) | Entrega |
 
-**Bucles:** un FAIL del reviewer vuelve al mismo builder (máximo 2 ciclos; después se escala). Cada fallo de la evaluación de fase se convierte en un paquete de corrección y en una prueba de regresión, y se vuelve a evaluar. Un cambio de idea te devuelve a la etapa que corresponda, y el orquestador te explica antes el impacto en simple.
+**Bucles:** un FAIL del reviewer vuelve al mismo builder (máximo 2 ciclos; después se escala). Cada fallo de la evaluación de fase se convierte en un paquete de corrección y en una prueba de regresión, y se vuelve a evaluar. Un cambio de idea te devuelve a la etapa que corresponda, y el orquestador te explica antes el impacto en simple. Un cambio solo visual va al diseñador y se construye con paquetes solo de frontend.
 
 ---
 
@@ -233,10 +249,11 @@ Una **fase** está terminada cuando además pasa la evaluación de fase (nivel 3
 | --- | --- | --- |
 | `PRODUCT GAP` | La spec no responde algo que afecta a lo que ves o vives como usuario | El orquestador te lo pregunta en simple, actualiza tu capa y el trabajo sigue |
 | `CONTRACT GAP` | El frontend o el backend necesita cambiar el contrato | El arquitecto ajusta el contrato; los dos builders siguen |
+| `DESIGN GAP` | El frontend necesita algo visible e importante que el sistema de diseño no cubre | El diseñador lo diseña (ajuste); si cambia lo que aprobaste, te lo enseña antes |
 | `SCOPE GAP` | Hay que tocar archivos fuera del alcance de forma importante | El arquitecto replanifica el paquete |
 | `BLOCKED` | Falla algo ajeno al paquete | Se resuelve en otro paquete o se escala |
 
-Las dudas técnicas menores las resuelve el builder con la opción conservadora y las declara como supuesto en su reporte. Las dudas de producto nunca: esas siempre llegan a ti.
+Las dudas técnicas menores las resuelve el builder con la opción conservadora y las declara como supuesto en su reporte. Las dudas de producto nunca: esas siempre llegan a ti. Los textos con significado (títulos, botones, mensajes, errores) son siempre los que aprobaste; los textos menores sin significado de producto (ejemplos en campos, descripciones para lectores de pantalla) los escribe el builder en el tono de tu app y los lista para que los veas en el informe.
 
 ### 8.6 Higiene de contexto
 
@@ -246,7 +263,7 @@ Las dudas técnicas menores las resuelve el builder con la opción conservadora 
 
 ### 8.7 Git
 
-Una rama por fase y un commit por paquete aprobado. Los builders nunca hacen commit. `push` y publicación solo cuando tú lo pidas.
+Una rama por fase y un commit por paquete aprobado, con solo los archivos de ese paquete cuando hay otro abierto. Al pasar la evaluación, la fase se integra en la rama base (`merge --no-ff`) y la siguiente sale de ahí. Los builders nunca hacen commit. `push` y publicación solo cuando tú lo pidas.
 
 ---
 
@@ -291,12 +308,13 @@ Los agentes empaquetados en un plugin no pueden traer sus propios hooks; Claude 
 
 | Hook | Evento | Qué garantiza |
 | --- | --- | --- |
-| **Guardia de roles** | `PreToolUse` | Cada rol escribe solo en su zona (sección 12). Los builders no pueden tocar pruebas de aceptación ni de regresión, ni el contrato. Los testers no pueden tocar el código de la app. El orquestador lee con propósito (las lecturas voluminosas van al scout) y solo delega en el equipo; el jefe de pruebas, solo en testers; el archivista conserva los límites de tu archivador original; nadie más delega |
+| **Guardia de roles** | `PreToolUse` | Cada rol escribe solo en su zona (sección 12). Los builders no pueden tocar pruebas de aceptación ni de regresión, ni el contrato, ni el diseño. Los testers no pueden tocar el código de la app. El orquestador lee con propósito (las lecturas voluminosas van al scout) y solo delega en el equipo; el jefe de pruebas, solo en testers; el archivista conserva los límites de tu archivador original; nadie más delega |
 | **Inyección de contexto** | `SubagentStart` | Todo subagente nace con memoria + specs + reglas de su rol |
 | **Pruebas rápidas obligatorias** | `SubagentStop` (builders) | Al intentar terminar, el hook ejecuta las pruebas rápidas; si fallan, el builder sigue trabajando (nivel 1) |
 | **Control de reporte** | `SubagentStop` | Builder, reviewer, arquitecto y jefe de pruebas no terminan sin su bloque de reporte. Un informe de fase sin resultados de regresión es devuelto |
 | **Generador de flujos** | `PostToolUse` | Al guardar un flujo: valida, genera el `.md` y el `.excalidraw` y devuelve los errores al orquestador |
-| **Recordatorio de gate** | `PostToolUse` sobre la delegación | Recuerda al orquestador que un paquete no está hecho sin el PASS del reviewer, ni una fase sin la evaluación del jefe de pruebas |
+| **Tokens de diseño** | `PostToolUse` | Al guardar `tokens.json`: valida roles, contraste AA y tipografías (rechaza las comerciales de Anthropic) y genera `tokens.css` |
+| **Recordatorio de gate** | `PostToolUse` sobre la delegación (y al retomar un agente) | Recuerda al orquestador que un paquete no está hecho sin el PASS del reviewer, ni una fase sin la evaluación del jefe de pruebas; qué mostrarte tras el diseñador; guardar solo los archivos del paquete; integrar la fase |
 | **Arranque** | `SessionStart` | Estado de la memoria + etapas, tablero y fallos pendientes |
 
 ---
@@ -306,6 +324,7 @@ Los agentes empaquetados en un plugin no pueden traer sus propios hooks; Claude 
 | Ruta | Escribe | Lee |
 | --- | --- | --- |
 | `docs/producto/**` | Solo el orquestador (los diagramas los genera el hook) | Todos |
+| `docs/diseno/**` | Solo el diseñador (`tokens.css` lo genera el hook) | Todos; es el contrato visual del frontend |
 | `docs/tecnico/**` | Solo el arquitecto técnico (el orquestador solo cambia el estado del tablero) | Todos |
 | `docs/pruebas/**`, `tests/aceptacion`, `tests/e2e`, `tests/regresion` | Solo el jefe de pruebas y los testers | Todos |
 | Código de frontend + sus pruebas rápidas | Builder frontend, dentro del alcance de su paquete | Reviewer, testers, scout |
@@ -324,13 +343,14 @@ System-agents/
   plugins/orquesta/
     .claude-plugin/plugin.json
     settings.json                    { "agent": "orquestador" }: el orquestador es el agente principal
-    agents/                          orquestador, scout, arquitecto, builder-frontend, builder-backend, reviewer,
-                                     jefe-de-pruebas, 4 testers y archivista
+    agents/                          orquestador, scout, diseñador, arquitecto, builder-frontend, builder-backend,
+                                     reviewer, jefe-de-pruebas, 4 testers y archivista
     skills/producto/                 etapas, plantillas, formatos y el generador de diagramas
+    skills/diseno/                   estilo de la casa, plantillas del sistema de diseño y validador de tokens
     skills/tecnico/                  stack de la casa y plantillas técnicas
     skills/pruebas/                  evaluación y registro de fallos
     skills/memoria/                  tu sistema de memoria, integrado
-    hooks/                           guardia, contexto, cierre, diagramas, recordatorio, inicio
+    hooks/                           guardia, contexto, cierre, diagramas, diseño, recordatorio, inicio
     tests/                           pruebas automáticas del propio plugin
 ```
 
@@ -384,6 +404,7 @@ Una persona que no programa no debería tener que ejecutar comandos para ver su 
 | 10 | Empaquetado | (a) tres plugins · (b) uno solo | **(b) sistema único**, por tu decisión: un solo plugin `orquesta` que reemplaza a los anteriores |
 | 11 | Idioma | (a) instrucciones internas de los agentes en inglés; todo lo que tú ves, en español · (b) todo en español | **(a)** |
 | 12 | Activación | (a) por proyecto · (b) en todas tus sesiones | **(a)** |
+| 13 | (v1.1) Dónde vive la parte creativa del frontend | (a) un agente diseñador con su capa `docs/diseno/` · (b) solo afinar el builder frontend | **(a)**, por tu decisión: crear y construir son trabajos distintos, y así ves el aspecto antes de construir |
 
 ---
 
@@ -391,13 +412,32 @@ Una persona que no programa no debería tener que ejecutar comandos para ver su 
 
 Implementado en `plugins/orquesta` (v1.0):
 
-- Los 12 agentes, las 4 skills y los 6 hooks descritos en este documento.
+- Los 13 agentes, las 5 skills y los 7 hooks descritos en este documento.
 - El generador de diagramas: flujos (Mermaid + Excalidraw con carriles por actor y flechas que no atraviesan cajas), mapas, bocetos y línea de fases. Hay un ejemplo en [`ejemplos/barberia`](../../ejemplos/barberia/).
-- 32 pruebas automáticas del propio plugin (`node --test tests/*.test.js`).
+- 45 pruebas automáticas del propio plugin (`node --test tests/*.test.js`).
 - Verificado en una sesión real de Claude Code: el orquestador arranca como agente principal, delega en el scout y en el jefe de pruebas, cada subagente recibe la memoria sin pedirla, la guardia bloquea al orquestador si intenta escribir código, al guardar un flujo se generan sus vistas, y el jefe de pruebas lanza a sus testers.
 
 Pendiente para próximas versiones:
 
+- Actualizar los diagramas 01, 02 y 05 con el diseñador y la capa `docs/diseno/` (hoy los describe este documento).
+- **Modo económico** (decisión 4b): hoy los modelos están fijos en cada agente.
+- **Abrir la app en tu ordenador** sin comandos (una demo local que lance el orquestador); hoy la ves en capturas, video y `referencia.html`.
+
 - **Especialistas opcionales** (móvil nativo, integraciones complejas, despliegue): hoy las integraciones las hace el builder backend y la publicación se prepara como un paquete más, con tu cuenta y tu OK sobre el costo.
 - **Espacios de trabajo aislados** para más de dos builders a la vez.
 - Una primera app real construida de punta a punta con el sistema, para afinar los prompts con la experiencia.
+
+---
+
+## 18. Cambios de la v1.1
+
+| Qué | Por qué |
+| --- | --- |
+| **Diseñador** (`disenador`), skill `diseno` y estilo de la casa | La estética que te gusta como punto de partida, original en cada proyecto y con opciones que eliges viendo tus pantallas |
+| Sistema de diseño como contrato visual (`tokens.json` validado → `tokens.css`, `sistema.md`, `referencia.html`) | Que cada paquete de frontend, hecho por un builder distinto, parezca la misma app; el reviewer y el tester de experiencia lo verifican |
+| `DESIGN GAP` y textos menores en el builder frontend | Que no improvise un aspecto nuevo, y que no te interrumpa por un texto de ayuda sin importancia |
+| Commit solo de los archivos del paquete cuando hay otro abierto; revisiones en paralelo sin mezclar | Antes, `git add -A` guardaba en el commit de un paquete los cambios sin revisar del paquete paralelo |
+| Pruebas rápidas por proyecto de Vitest (`frontend` / `backend`) | Antes, las del frontend incluían `src/app/api` y el backend en paralelo bloqueaba al frontend; y faltaba el entorno de pruebas de componentes |
+| Zonas con exclusiones (`"!src/app/api/**"`) | El frontend no podía escribir pruebas ni componentes dentro de `src/app` |
+| Integración de cada fase en la rama base (`merge --no-ff`) | Antes las ramas de fase se apilaban y la rama principal nunca recibía la app |
+| Recordatorio también al retomar un agente (`SendMessage`) y aviso si se lanzó en segundo plano | Los gates no se saltan al corregir, y no hay falsas alarmas |

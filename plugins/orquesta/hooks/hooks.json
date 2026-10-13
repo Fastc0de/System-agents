@@ -1,5 +1,5 @@
 {
-  "description": "Orquesta rules: session orientation, a role guard (each agent writes, runs and delegates only within its job), project context injected into every subagent, report and quick-test gates when subagents finish, flow and visual rendering on save, and gate reminders for the orchestrator.",
+  "description": "Orquesta rules: session orientation, a role guard (each agent writes, runs and delegates only within its job), project context injected into every subagent, report and quick-test gates when subagents finish, flow, visual and design-token rendering on save, and gate reminders for the orchestrator.",
   "hooks": {
     "SessionStart": [
       {
@@ -20,11 +20,12 @@
       {
         "matcher": "Write|Edit|MultiEdit",
         "hooks": [
-          { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/diagramas.js\"", "timeout": 30 }
+          { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/diagramas.js\"", "timeout": 30 },
+          { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/diseno.js\"", "timeout": 10 }
         ]
       },
       {
-        "matcher": "Agent|Task",
+        "matcher": "Agent|Task|SendMessage",
         "hooks": [
           { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/recordatorio.js\"", "timeout": 10 }
         ]

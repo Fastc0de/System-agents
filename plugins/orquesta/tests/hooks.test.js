@@ -15,6 +15,7 @@ const contexto = require(path.join(HOOKS, "contexto"));
 const cierre = require(path.join(HOOKS, "cierre"));
 const recordatorio = require(path.join(HOOKS, "recordatorio"));
 const diagramasHook = require(path.join(HOOKS, "diagramas"));
+const disenoHook = require(path.join(HOOKS, "diseno"));
 const inicio = require(path.join(HOOKS, "inicio"));
 const registro = require(path.join(PLUGIN, "skills", "pruebas", "scripts", "lib", "registro"));
 
@@ -59,6 +60,17 @@ test("each role writes only in its zone", () => {
   assert.equal(W(root, "orquesta:tester-limites", "docs/pruebas/evidencias/cap.png"), null);
   assert.match(W(root, "orquesta:tester-servidor", "src/server/api.ts"), /fuera/);
   assert.match(W(root, "orquesta:tester-servidor", "docs/pruebas/registro-de-fallos.md"), /fuera/);
+  assert.equal(W(root, "orquesta:disenador", "docs/diseno/direcciones.html"), null);
+  assert.match(W(root, "orquesta:disenador", "docs/producto/4-experiencia/pantallas.md"), /docs\/diseno/);
+  assert.match(W(root, "orquesta:disenador", "src/app/globals.css"), /fuera/);
+  assert.match(W(root, "orquesta:orquestador", "docs/diseno/tokens.json"), /fuera/);
+});
+
+test("tokens.css is generated, never written by hand", () => {
+  const root = project();
+  assert.match(W(root, "orquesta:disenador", "docs/diseno/tokens.css"), /tokens\.json/);
+  assert.equal(W(root, "orquesta:disenador", "docs/diseno/tokens.json"), null);
+  assert.match(B(root, "orquesta:disenador", "ls docs"), /no ejecuta/);
 });
 
 test("builders cannot touch other layers, QA tests or files outside their zone", () => {
@@ -71,6 +83,19 @@ test("builders cannot touch other layers, QA tests or files outside their zone",
   assert.match(W(root, "orquesta:builder-backend", "docs/tecnico/contrato-api.md"), /no escribe/);
   assert.match(W(root, "orquesta:builder-backend", ".claude/settings.json"), /no escribe/);
   assert.equal(W(root, "orquesta:builder-backend", path.relative(root, path.join(os.tmpdir(), "x.txt"))), null);
+  assert.match(W(root, "orquesta:builder-frontend", "docs/diseno/tokens.json"), /no escribe/);
+});
+
+test("zones accept exclusions: the frontend owns src/app except the API", () => {
+  const root = project({ "docs/tecnico/zonas.json": { frontend: ["src/app/**", "!src/app/api/**", "src/components/**"], backend: ["src/app/api/**", "src/server/**"], compartido: ["package.json"] } });
+  assert.equal(W(root, "orquesta:builder-frontend", "src/app/entrar/page.tsx"), null);
+  assert.equal(W(root, "orquesta:builder-frontend", "src/app/entrar/page.test.tsx"), null);
+  assert.equal(W(root, "orquesta:builder-frontend", "src/app/tokens.css"), null);
+  assert.match(W(root, "orquesta:builder-frontend", "src/app/api/sesiones/route.ts"), /zona frontend/);
+  assert.equal(W(root, "orquesta:builder-backend", "src/app/api/sesiones/route.ts"), null);
+  assert.match(W(root, "orquesta:builder-backend", "src/app/entrar/page.tsx"), /zona backend/);
+  assert.equal(W(root, "orquesta:builder-frontend", "package.json"), null);
+  assert.match(B(root, "orquesta:builder-frontend", "rm src/app/api/sesiones/route.ts"), /zona frontend/);
 });
 
 test("nobody but the test lead skips or focuses tests", () => {
@@ -109,10 +134,10 @@ test("the orchestrator reads with purpose", () => {
 test("orchestrator bash: git with care and the plugin scripts only", () => {
   const root = project();
   const diagrams = path.join(PLUGIN, "skills", "producto", "scripts", "diagramas.js");
-  for (const ok of ["git status", "git log --oneline -5", "git diff --stat", "git add -A", 'git commit -m "WP-001: esqueleto"', "git switch -c fase-1", "git push", `node "${diagrams}" todo .`]) {
+  for (const ok of ["git status", "git log --oneline -5", "git diff --stat", "git add -A", "git add -- src/app/entrar/page.tsx docs/tecnico/trabajo/PLAN.md", 'git commit -m "WP-001: esqueleto"', "git switch -c fase-1", "git switch main", 'git merge --no-ff fase-1-reservas -m "Fase 1: Ya se puede reservar"', "git merge --abort", "git push", `node "${diagrams}" todo .`]) {
     assert.equal(B(root, "orquesta:orquestador", ok), null, ok);
   }
-  for (const bad of ["git diff", "git log -p", "git push --force", "git commit --amend", "git reset --hard", "npm test", "cat src/a.js", "git status && rm -rf src", "node otro.js"]) {
+  for (const bad of ["git diff", "git log -p", "git push --force", "git commit --amend", "git reset --hard", "git merge --squash fase-1", "git merge -X theirs fase-1", "npm test", "cat src/a.js", "git status && rm -rf src", "node otro.js"]) {
     assert.ok(B(root, "orquesta:orquestador", bad), bad);
   }
 });
@@ -146,7 +171,7 @@ test("archivista keeps the original archiver limits", () => {
 });
 
 test("delegation: orchestrator to its team, test lead to testers, nobody else", () => {
-  for (const t of ["orquesta:scout", "orquesta:arquitecto", "orquesta:builder-frontend", "orquesta:builder-backend", "orquesta:reviewer", "orquesta:jefe-de-pruebas", "orquesta:archivista"]) {
+  for (const t of ["orquesta:scout", "orquesta:disenador", "orquesta:arquitecto", "orquesta:builder-frontend", "orquesta:builder-backend", "orquesta:reviewer", "orquesta:jefe-de-pruebas", "orquesta:archivista"]) {
     assert.equal(A("orquesta:orquestador", t), null, t);
   }
   assert.match(A("orquesta:orquestador", "general-purpose"), /solo en su equipo/);
@@ -154,6 +179,7 @@ test("delegation: orchestrator to its team, test lead to testers, nobody else", 
   assert.equal(A("orquesta:jefe-de-pruebas", "orquesta:tester-experiencia"), null);
   assert.match(A("orquesta:jefe-de-pruebas", "orquesta:builder-backend"), /solo lanza testers/);
   assert.match(A("orquesta:builder-backend", "orquesta:scout"), /no delega/);
+  assert.match(A("orquesta:disenador", "orquesta:builder-frontend"), /no delega/);
 });
 
 test("guard script blocks with exit 2 and allows with exit 0", () => {
@@ -202,8 +228,20 @@ test("context injection carries memory, product, technical and failures by role"
     "docs/tecnico/zonas.json": { frontend: ["src/app/**"], backend: ["src/server/**"], compartido: ["package.json"] },
     "docs/tecnico/contrato-api.md": "# Contrato\n\n## Sesiones\n\n### POST /api/sesiones\n",
     "docs/pruebas/registro-de-fallos.md": LEDGER,
+    "docs/diseno/tokens.json": { nombre: "Barbería Navaja · B «Navaja y papel»", version: 2, color: { claro: { fondo: "#FAF9F5", texto: "#1F1E1C", acento: "#B5532F" }, oscuro: {} }, tipografia: { titulos: { familia: "Source Serif 4" }, texto: { familia: "Hanken Grotesk" } }, firma: "Raya de barbero." },
+    "docs/diseno/referencia.html": "<!doctype html>",
   });
+  const front = contexto.build("builder-frontend", root);
+  assert.match(front, /### Diseño/);
+  assert.match(front, /B «Navaja y papel» · versión 2/);
+  assert.match(front, /titulos: Source Serif 4/);
+  assert.match(front, /acento #B5532F · con modo oscuro/);
+  assert.match(front, /docs\/diseno\/referencia\.html/);
+  assert.match(front, /design-gap/);
+  assert.match(contexto.build("tester-experiencia", root), /Firma: Raya de barbero/);
+  assert.match(contexto.build("disenador", root), /DESIGN REPORT/);
   const builder = contexto.build("builder-backend", root);
+  assert.doesNotMatch(builder, /### Diseño/);
   assert.match(builder, /<project-context/);
   assert.match(builder, /Barbería Navaja/);
   assert.match(builder, /PM-ADR-0001: Stack de la casa: Next\.js \+ SQLite\./);
@@ -235,6 +273,10 @@ test("reports are required, once", () => {
   assert.match(cierre.reportProblem("jefe-de-pruebas", "## EVALUATION VERDICT\n- Verdict: PASA\n"), /Regression/);
   assert.equal(cierre.reportProblem("jefe-de-pruebas", "## EVALUATION VERDICT\n- Verdict: NO PASA\n### Regression\n- 3/3\n"), null);
   assert.match(cierre.reportProblem("tester-limites", "hecho"), /TESTER REPORT/);
+  assert.equal(cierre.reportProblem("builder-frontend", "## BUILD REPORT\n- Status: design-gap\n"), null);
+  assert.match(cierre.reportProblem("disenador", "listo"), /DESIGN REPORT/);
+  assert.match(cierre.reportProblem("disenador", "## DESIGN REPORT\n- Estado: listo\n"), /Modo/);
+  assert.equal(cierre.reportProblem("disenador", "## DESIGN REPORT\n- Modo: direcciones\n- Estado: listo\n"), null);
   const nudge = cierre.decide({ agent_type: "orquesta:scout", last_assistant_message: "hecho", stop_hook_active: false, cwd: "/" });
   assert.match(nudge, /FINDINGS/);
   assert.equal(cierre.decide({ agent_type: "orquesta:scout", last_assistant_message: "hecho", stop_hook_active: true, cwd: "/" }), null);
@@ -266,10 +308,20 @@ test("reminders point the orchestrator to the next gate and count FAILs", () => 
   assert.match(r("orquesta:builder-frontend", BUILD_DONE), /reviewer/);
   assert.match(r("orquesta:builder-frontend", "## BUILD REPORT\n- Status: product-gap"), /lenguaje simple/);
   assert.match(r("orquesta:reviewer", "## REVIEW VERDICT\n- Verdict: PASS"), /git commit -m "WP-007/);
+  assert.match(r("orquesta:reviewer", "## REVIEW VERDICT\n- Verdict: PASS"), /Archivos del paquete/);
+  assert.match(r("orquesta:builder-frontend", "## BUILD REPORT\n- Status: design-gap"), /disenador en modo ajuste/);
+  assert.match(r("orquesta:builder-frontend", "lanzado en segundo plano"), /segundo plano/);
+  assert.match(r("orquesta:disenador", "## DESIGN REPORT\n- Modo: direcciones"), /direcciones\.html/);
+  assert.match(r("orquesta:disenador", "## DESIGN REPORT\n- Modo: sistema"), /¿Se siente como la imaginas\?/);
+  assert.match(r("orquesta:disenador", "## DESIGN REPORT\n- Modo: ajuste"), /solo|frontend/);
+  const resumed = (response) => recordatorio.reminder({ ...base, tool_name: "SendMessage", tool_input: { to: "builder-1", message: "Corrige WP-009" }, tool_response: response });
+  assert.match(resumed({ content: [{ type: "text", text: "## BUILD REPORT\n- WP: WP-009\n- Status: done" }] }), /WP-009 no está hecho/);
+  assert.equal(resumed("Mensaje enviado."), null, "a plain acknowledgement is not a report");
   assert.match(r("orquesta:reviewer", "Verdict: FAIL"), /FAIL n\.º 1/);
   assert.match(r("orquesta:reviewer", "Verdict: FAIL"), /límite de 2/);
   assert.match(r("orquesta:jefe-de-pruebas", { content: [{ type: "text", text: "Verdict: NO PASA" }] }), /corrección/);
   assert.match(r("orquesta:jefe-de-pruebas", "Verdict: PASA CON OBSERVACIONES"), /memoria/);
+  assert.match(r("orquesta:jefe-de-pruebas", "Verdict: PASA"), /git merge --no-ff/);
   assert.match(r("orquesta:arquitecto", "## ARCHITECT REPORT"), /cobertura/);
   assert.equal(recordatorio.reminder({ ...base, agent_id: "sub", agent_type: "orquesta:jefe-de-pruebas", tool_input: { subagent_type: "orquesta:tester-limites" } }), null);
 });
@@ -288,6 +340,21 @@ test("saving a flow regenerates its views or returns the errors", () => {
   assert.equal(bad.decision, "block");
   assert.match(bad.reason, /no tiene pasos/);
   assert.equal(diagramasHook.handle({ cwd: root, tool_input: { file_path: path.join(root, "src/a.js") } }), null);
+});
+
+test("saving the design tokens validates them and regenerates tokens.css", () => {
+  const good = JSON.parse(fs.readFileSync(path.join(__dirname, "fixtures", "tokens.json"), "utf8"));
+  const root = project({ "docs/diseno/tokens.json": good });
+  const file = path.join(root, "docs/diseno/tokens.json");
+  const ok = disenoHook.handle({ cwd: root, tool_input: { file_path: file } });
+  assert.match(ok.hookSpecificOutput.additionalContext, /tokens\.css regenerado/);
+  assert.match(fs.readFileSync(path.join(root, "docs/diseno/tokens.css"), "utf8"), /--acento: #B5532F;/);
+  assert.match(disenoHook.handle({ cwd: root, tool_input: { file_path: file } }).hookSpecificOutput.additionalContext, /ya estaba al día/);
+  fs.writeFileSync(file, JSON.stringify({ ...good, color: { claro: { ...good.color.claro, texto_suave: "#B8B3A6" } } }));
+  const bad = disenoHook.handle({ cwd: root, tool_input: { file_path: file } });
+  assert.equal(bad.decision, "block");
+  assert.match(bad.reason, /texto_suave sobre fondo/);
+  assert.equal(disenoHook.handle({ cwd: root, tool_input: { file_path: path.join(root, "docs/producto/tokens.json") } }), null);
 });
 
 test("session start summarizes memory, stages, board and failures", () => {
