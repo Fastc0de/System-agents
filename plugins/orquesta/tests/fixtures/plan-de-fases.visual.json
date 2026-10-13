@@ -1,0 +1,9 @@
+{
+  "tipo": "fases",
+  "titulo": "Plan de fases · Barbería Navaja",
+  "fases": [
+    { "nombre": "Fase 1 · Ya se puede reservar", "entrega": "Al terminar podrás registrarte, entrar, reservar una cita y verla en tu agenda.", "funcionalidades": ["FUN-01", "FUN-02", "FUN-03"], "estado": "en-curso" },
+    { "nombre": "Fase 2 · Gestión", "entrega": "Cancelar y reprogramar citas; agenda del día para cada barbero.", "funcionalidades": ["FUN-04"], "estado": "pendiente" },
+    { "nombre": "Fase 3 · Cobros y avisos", "entrega": "Pagar al reservar y recibir un recordatorio un día antes.", "funcionalidades": ["FUN-05", "FUN-06"], "estado": "pendiente" }
+  ]
+}
