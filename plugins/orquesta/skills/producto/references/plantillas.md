@@ -16,6 +16,7 @@ Machine-readable progress, kept current by the orchestrator. The session-start h
   "modo": null,
   "hasta_fase": null,
   "fase_actual": null,
+  "rama_base": null,
   "memoria": true,
   "actualizado": "2026-10-13"
 }
@@ -24,6 +25,7 @@ Machine-readable progress, kept current by the orchestrator. The session-start h
 - `etapas.N`: `pendiente` | `en-curso` | `aprobada`.
 - `modo`: `null` until stage 5, then `por-fases` | `de-un-tiro` | `hasta-fase-N`.
 - `fase_actual`: phase being built, or `null` before construction.
+- `rama_base`: the branch phases are merged into (`main` usually), recorded at green light.
 
 ---
 
@@ -129,7 +131,13 @@ The criteria here and in the flow's `criterios` must say the same thing; the flo
 ```markdown
 # Pantallas
 
-Estilo: <colores, tono, referencias>. Prioridad de dispositivo: <móvil primero / ordenador primero>.
+## Estilo
+- Cómo se tiene que sentir: <tres palabras de la persona>
+- Le gusta: <apps o webs, y por qué> · No le gusta: <…>
+- Marca: <logo, colores, tipografías que ya tiene, o «ninguna»>
+- Dispositivo: <móvil primero / ordenador primero / ambos>
+- Dirección elegida: <B «Navaja y papel», con la letra de A> · ver docs/diseno/referencia.html
+- Opciones de experiencia: <modo oscuro automático · movimiento sobrio · fotos del local>
 
 ## P02 · Entrar
 - Para qué: <…>
@@ -142,6 +150,8 @@ Estilo: <colores, tono, referencias>. Prioridad de dispositivo: <móvil primero 
 - Textos: «Entrar», «¿Olvidaste tu contraseña?», «Correo o contraseña incorrectos»
 - Boceto: [reservar.excalidraw](reservar.excalidraw)
 ```
+
+The *Estilo* section is filled in two steps: tastes before the designer works, the chosen direction and options after the person picks.
 
 ---
 

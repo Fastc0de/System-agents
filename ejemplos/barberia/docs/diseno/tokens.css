@@ -1,0 +1,87 @@
+/* Generado desde tokens.json por orquesta. No lo edites a mano: cambia tokens.json. */
+/* Barbería Navaja · B «Navaja y papel» · versión 1 */
+
+:root {
+  --fondo: #F6F1E7;
+  --superficie: #FFFDF8;
+  --superficie-alt: #ECE4D3;
+  --borde: #D9CFBC;
+  --texto: #1E1B18;
+  --texto-suave: #5A5348;
+  --acento: #24456B;
+  --acento-texto: #FFFDF8;
+  --acento-suave: #DFE6EE;
+  --exito: #3F6B3B;
+  --aviso: #86570A;
+  --error: #A8372B;
+  --foco: #B5532F;
+  --firma-rojo: #B23A2E;
+  --fuente-titulos: Fraunces, Georgia, serif;
+  --fuente-texto: "Instrument Sans", system-ui, sans-serif;
+  --tam-xs: 0.75rem;
+  --tam-sm: 0.875rem;
+  --tam-base: 1rem;
+  --tam-lg: 1.125rem;
+  --tam-xl: 1.25rem;
+  --tam-2xl: 1.5rem;
+  --tam-3xl: 2rem;
+  --tam-4xl: 2.5rem;
+  --interlineado-titulos: 1.1;
+  --interlineado-texto: 1.55;
+  --espacio-0: 0px;
+  --espacio-1: 4px;
+  --espacio-2: 8px;
+  --espacio-3: 12px;
+  --espacio-4: 16px;
+  --espacio-5: 24px;
+  --espacio-6: 32px;
+  --espacio-7: 48px;
+  --espacio-8: 64px;
+  --radio-sm: 4px;
+  --radio-md: 6px;
+  --radio-lg: 10px;
+  --radio-pastilla: 999px;
+  --sombra-flotante: 0 1px 2px rgb(30 27 24 / 0.06), 0 8px 24px rgb(30 27 24 / 0.08);
+  --duracion-rapido: 120ms;
+  --duracion-normal: 200ms;
+  --duracion-lento: 320ms;
+  --curva: cubic-bezier(0.2, 0, 0, 1);
+  --ancho-lectura: 64ch;
+  --ancho-contenido: 960px;
+  color-scheme: light;
+}
+
+/* Para Tailwind CSS v4 (utilidades bg-fondo, text-texto-suave, font-titulos, rounded-md, shadow-flotante, ease-curva…).
+   Los navegadores ignoran este bloque cuando el archivo se usa como CSS normal. */
+@theme inline {
+  --color-fondo: var(--fondo);
+  --color-superficie: var(--superficie);
+  --color-superficie-alt: var(--superficie-alt);
+  --color-borde: var(--borde);
+  --color-texto: var(--texto);
+  --color-texto-suave: var(--texto-suave);
+  --color-acento: var(--acento);
+  --color-acento-texto: var(--acento-texto);
+  --color-acento-suave: var(--acento-suave);
+  --color-exito: var(--exito);
+  --color-aviso: var(--aviso);
+  --color-error: var(--error);
+  --color-foco: var(--foco);
+  --color-firma-rojo: var(--firma-rojo);
+  --font-titulos: var(--fuente-titulos);
+  --font-texto: var(--fuente-texto);
+  --text-xs: var(--tam-xs);
+  --text-sm: var(--tam-sm);
+  --text-base: var(--tam-base);
+  --text-lg: var(--tam-lg);
+  --text-xl: var(--tam-xl);
+  --text-2xl: var(--tam-2xl);
+  --text-3xl: var(--tam-3xl);
+  --text-4xl: var(--tam-4xl);
+  --radius-sm: var(--radio-sm);
+  --radius-md: var(--radio-md);
+  --radius-lg: var(--radio-lg);
+  --radius-pastilla: var(--radio-pastilla);
+  --shadow-flotante: var(--sombra-flotante);
+  --ease-curva: var(--curva);
+}

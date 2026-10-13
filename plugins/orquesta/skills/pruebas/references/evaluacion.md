@@ -14,6 +14,7 @@ The test lead (`orquesta:jefe-de-pruebas`) runs every evaluation. It tests what 
 ## Inputs
 
 - The spec: `docs/producto/2-funcionalidades.md`, feature cards and flows in `docs/producto/3-logica/` (every step, branch and criterion), screens and texts in `docs/producto/4-experiencia/`.
+- The design: `docs/diseno/` (`sistema.md`, `tokens.json`, `referencia.html`), what the screens must look like.
 - The technical layer: `docs/tecnico/contrato-api.md`, `datos.md`, `comandos.json` (how to install, run, seed and test).
 - What changed: `git log --oneline` and `git diff --stat` since the last evaluation (find it in `docs/pruebas/informes/`).
 - The failure ledger `docs/pruebas/registro-de-fallos.md` and its summary: `node "${CLAUDE_PLUGIN_ROOT}/skills/pruebas/scripts/registro.js" resumen .`

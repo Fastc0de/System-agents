@@ -21,6 +21,7 @@ const TEST_TIMEOUT_MS = 240000;
 const REPORTS = {
   scout: { marker: /^##\s*FINDINGS\b/m, name: "## FINDINGS" },
   arquitecto: { marker: /^##\s*ARCHITECT REPORT\b/m, name: "## ARCHITECT REPORT" },
+  disenador: { marker: /^##\s*DESIGN REPORT\b/m, name: "## DESIGN REPORT" },
   "builder-frontend": { marker: /^##\s*BUILD REPORT\b/m, name: "## BUILD REPORT" },
   "builder-backend": { marker: /^##\s*BUILD REPORT\b/m, name: "## BUILD REPORT" },
   reviewer: { marker: /^##\s*REVIEW VERDICT\b/m, name: "## REVIEW VERDICT" },
@@ -28,7 +29,8 @@ const REPORTS = {
   tester: { marker: /^##\s*TESTER REPORT\b/m, name: "## TESTER REPORT" },
 };
 
-const BUILD_STATUS = /^\s*[-*]?\s*Status:\s*(done|blocked|product-gap|contract-gap|scope-gap)\b/im;
+const BUILD_STATUS = /^\s*[-*]?\s*Status:\s*(done|blocked|product-gap|contract-gap|design-gap|scope-gap)\b/im;
+const DESIGN_MODE = /^\s*[-*]?\s*Modo:\s*(direcciones|sistema|ajuste)\b/im;
 const REVIEW_VERDICT = /^\s*[-*]?\s*Verdict:\s*(PASS|FAIL)\b/m;
 const EVAL_VERDICT = /^\s*[-*]?\s*Verdict:\s*(PASA CON OBSERVACIONES|PASA|NO PASA)\b/m;
 
@@ -46,12 +48,13 @@ function reportProblem(role, text) {
   if (!spec.marker.test(text)) return `Termina con tu bloque de reporte «${spec.name}» en el formato de tus instrucciones.`;
   if (c.BUILDERS.includes(role)) {
     const m = text.match(BUILD_STATUS);
-    if (!m) return "Tu BUILD REPORT necesita una línea «Status: done | blocked | product-gap | contract-gap | scope-gap».";
+    if (!m) return "Tu BUILD REPORT necesita una línea «Status: done | blocked | product-gap | contract-gap | design-gap | scope-gap».";
     if (m[1].toLowerCase() === "done") {
       const v = section(text, "Verification");
       if (!v || !/`[^`]+`/.test(v)) return "Dices «done» sin evidencia: añade «### Verification» con cada comando ejecutado entre comillas invertidas y su resultado.";
     }
   }
+  if (role === "disenador" && !DESIGN_MODE.test(text)) return "Tu DESIGN REPORT necesita una línea «Modo: direcciones | sistema | ajuste».";
   if (role === "reviewer") {
     if (!REVIEW_VERDICT.test(text)) return "Tu REVIEW VERDICT necesita una línea «Verdict: PASS» o «Verdict: FAIL».";
     const v = section(text, "Verification run");

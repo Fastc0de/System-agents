@@ -18,7 +18,7 @@ const DIAGRAMS_SCRIPT = path.join(c.PLUGIN_ROOT, "skills", "producto", "scripts"
 const LEDGER_SCRIPT = path.join(c.PLUGIN_ROOT, "skills", "pruebas", "scripts", "registro.js");
 const ARCHIVE_SCRIPT = path.join(c.PLUGIN_ROOT, "skills", "memoria", "scripts", "archive.js");
 
-const ORCHESTRATOR_DELEGATES = ["scout", "arquitecto", "builder-frontend", "builder-backend", "reviewer", "jefe-de-pruebas", "archivista"];
+const ORCHESTRATOR_DELEGATES = ["scout", "disenador", "arquitecto", "builder-frontend", "builder-backend", "reviewer", "jefe-de-pruebas", "archivista"];
 
 // Bulky or generated files the orchestrator should never pull into the
 // conversation; the scout reads and summarizes them instead.
@@ -51,6 +51,8 @@ function writeZones(role, root) {
       return { allow: [c.ZONES.producto, c.ZONES.plan], text: "docs/producto/** y el estado del tablero en docs/tecnico/trabajo/PLAN.md" };
     case "arquitecto":
       return { allow: [c.ZONES.tecnico], text: "docs/tecnico/**" };
+    case "disenador":
+      return { allow: [c.ZONES.diseno], text: "docs/diseno/**" };
     case "jefe-de-pruebas":
       return { allow: [c.ZONES.pruebas, ...c.QA_TEST_DIRS], text: "docs/pruebas/** y tests/aceptacion|e2e|regresion/**" };
     case "archivista":
@@ -68,9 +70,10 @@ function builderZoneCheck(role, rel, root) {
   const zonas = c.readJson(path.join(root, "docs", "tecnico", "zonas.json"));
   if (zonas && typeof zonas === "object") {
     const side = role === "builder-frontend" ? "frontend" : "backend";
-    const mine = [].concat(zonas[side] || [], zonas.compartido || []);
-    if (mine.length && !c.matchesAny(rel, mine)) {
-      return `${rel} está fuera de la zona ${side} definida en docs/tecnico/zonas.json (${mine.join(", ")}). Si tu paquete necesita tocarlo, detente con Status: scope-gap.`;
+    const own = [].concat(zonas[side] || []);
+    const shared = [].concat(zonas.compartido || []);
+    if ((own.length || shared.length) && !c.inZone(rel, own) && !c.inZone(rel, shared)) {
+      return `${rel} está fuera de la zona ${side} definida en docs/tecnico/zonas.json (${own.concat(shared).join(", ")}). Si tu paquete necesita tocarlo, detente con Status: scope-gap.`;
     }
   }
   return null;
@@ -88,6 +91,7 @@ function checkWrite(role, input, root) {
     if ((c.BUILDERS.includes(role) || c.TESTERS.includes(role)) && c.inTmp(target)) return null;
     return "solo se escribe dentro del proyecto.";
   }
+  if (c.under(rel, c.ZONES.tokensCss)) return "docs/diseno/tokens.css se genera solo desde docs/diseno/tokens.json: cambia tokens.json.";
 
   if (c.BUILDERS.includes(role)) {
     const reason = builderZoneCheck(role, rel, root);
@@ -219,6 +223,12 @@ function checkOrchestratorBash(command) {
     case "checkout":
       if (!flags.includes("-b")) return "usa `git switch <rama>` o `git checkout -b <rama>`; checkout de archivos descartaría cambios.";
       return null;
+    case "merge": {
+      // Closing a phase: bring the phase branch into the base branch.
+      const allowed = /^(--no-ff|--ff-only|--no-edit|--abort|-m|--message(=.*)?)$/;
+      if (flags.some((t) => t.startsWith("-") && !allowed.test(t))) return "al cerrar una fase solo se usa `git merge --no-ff <rama-de-fase> -m \"…\"` (o `--abort`), sin estrategias ni --squash.";
+      return null;
+    }
     case "add":
       return null;
     case "commit":
@@ -319,7 +329,7 @@ function decide(input) {
     if (typeof command !== "string") return "falta el comando.";
     if (role === "orquestador") return checkOrchestratorBash(command);
     if (role === "archivista") return checkArchivistBash(command);
-    if (role === "scout" || role === "arquitecto") return `el ${role} no ejecuta comandos.`;
+    if (role === "scout" || role === "arquitecto" || role === "disenador") return `el ${role} no ejecuta comandos.`;
     return checkWorkerBash(role, command, root);
   }
   return null;

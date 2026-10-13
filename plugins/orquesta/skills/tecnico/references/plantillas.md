@@ -28,7 +28,7 @@ docs/tecnico/
 <House stack, or the deviation and its reason.>
 
 ## Componentes
-- Frontend: <rutas y componentes principales>. Zona: zonas.json#frontend
+- Frontend: <rutas y componentes principales>. Zona: zonas.json#frontend. Aspecto: docs/diseno/ (tokens.css copiado en src/app/tokens.css, componentes base en src/components/ui/)
 - Backend: <módulos de src/server, rutas de API>. Zona: zonas.json#backend
 - Datos: <base de datos, ORM>
 - Servicios externos: <correo, pagos…> y cómo se simulan en pruebas
@@ -96,7 +96,7 @@ See `stack-de-la-casa.md` for the default content. Both are read by hooks: keep 
 ## Paso a paso
 | Paso del flujo | Frontend | Backend | Datos |
 | --- | --- | --- | --- |
-| F01:pantalla_login | formulario en src/app/entrar/page.tsx | — | — |
+| F01:pantalla_login | P02 «Entrar» en src/app/entrar/page.tsx con ui/Campo y ui/Boton (referencia.html#P02) | — | — |
 | F01:password_ok | — | src/server/sesiones/verificar.ts | User.passwordHash |
 
 ## Criterios técnicos
@@ -176,4 +176,6 @@ Estados: pendiente · en-curso · revision · hecho · bloqueado
 - Every WP leaves the app running and the quick tests green.
 - Order: WP-001 walking skeleton → data model → features in the order of the phase plan.
 - Mark `Paralelo con` only for WPs with no dependency between them and no shared file.
+- Frontend WPs add `- Diseño: referencia.html#P02, componentes ui/Campo, ui/Boton · sistema v1` under the header.
+- Visual-only changes (a design adjustment) become frontend WPs only; the contract and the backend do not change.
 - Correction WPs (after a failed evaluation) cite the `FALLO-xxx` they fix and the regression test that must pass: `Verificación: npx playwright test -c tests/e2e/playwright.config.ts tests/regresion/FALLO-012-…`.

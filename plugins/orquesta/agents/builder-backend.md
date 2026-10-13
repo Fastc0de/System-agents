@@ -26,6 +26,7 @@ You build the part of the app that keeps the data and enforces the rules, one wo
 - Implement `docs/tecnico/contrato-api.md` **to the letter**: paths, inputs, status codes, response shapes, error codes. Never change it.
 - Use git only to look (`status`, `diff`, `log`). No commits: the orchestrator commits after the review.
 - Never skip or focus tests (`.skip`, `.only`, `xit`).
+- A frontend WP may be built at the same time in the same folder. Never touch its files; if its unfinished work breaks a check that is not yours, say so in your report instead of fixing it.
 
 ## How to build
 

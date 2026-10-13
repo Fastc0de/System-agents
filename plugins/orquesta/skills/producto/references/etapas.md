@@ -77,21 +77,34 @@ Each stage has a goal, the conversation, what you write, what the person approve
 
 ## Stage 4 · Experiencia
 
-**Goal.** The person sees how the app will look and feel before it is built.
+**Goal.** The person sees how the app will look and feel before it is built, and chooses its look from real options.
 
-**Conversation.**
+**Conversation, part 1: the screens.**
 - List the screens, derived from the flows' `pantalla` steps; confirm none is missing.
 - For each screen: what is on it, the main action, what is shown when there is no data, while loading, and on error. The exact texts and messages people will read.
-- Style: colors, tone (formal, friendly), any brand, apps or websites they like.
 - Device priority: phone first, computer first, or both.
 
-**Write.**
-- `docs/producto/4-experiencia/pantallas.md` (template "pantallas"): each screen with id `P01`…, purpose, content, states, texts, and which flow steps it serves.
+**Conversation, part 2: how it should feel.** Few questions, all about taste, none about technique:
+- "Dime tres palabras de cómo quieres que se sienta tu app" (cálida, seria, divertida, elegante, de barrio…).
+- Apps or websites they like or dislike, and why (you may look them up with WebSearch to understand them).
+- An existing brand: logo, colors, typefaces. If there is one, it leads.
+- Mention once: "Por defecto partimos de un estilo cálido y editorial, tipo papel, con letras de libro y un solo color de acento; te propondré tres variantes para que elijas."
+
+**Write (you).**
+- `docs/producto/4-experiencia/pantallas.md` (template "pantallas"): each screen with id `P01`…, purpose, content, states, texts, and which flow steps it serves; and the **Estilo** section.
 - Wireframes `docs/producto/4-experiencia/<slug>.visual.json` (`boceto`), one per feature or per group of screens, with navigation arrows.
 
-**Approval.** "¿Se siente como la imaginas?" Light version for small apps: one wireframe file for the main journey.
+**The look (the designer).**
+1. Delegate to `orquesta:disenador`, mode `direcciones`. It writes `docs/diseno/direcciones.html`: three directions (A · Casa, B · Casa + mundo, C · Salto) built with the real screens and texts, plus the experience options that fit (dark mode, motion, imagery, installable…).
+2. Show it: "Abre `docs/diseno/direcciones.html` con doble clic". Relay each direction in two plain lines and your recommendation (format in `lenguaje.md`). Ask which one, or what mix, and the experience options.
+3. Write the choice in the **Estilo** section; delegate mode `sistema`. The designer writes `tokens.json`, `sistema.md` and `referencia.html`, a navigable version of every screen.
+4. Show `docs/diseno/referencia.html`: "puedes tocar los botones para pasar de pantalla". Changes go back to the designer (`ajuste`).
 
-**Done when.** Every `pantalla` step of an approved flow has a screen with content, states and texts.
+**Approval.** "¿Se siente como la imaginas?" on the reference. Commit the product and design files ("Etapa 4: estilo «…»").
+
+**Light version** for small apps: the wireframe of the main journey only, and directions with one screen each. If the person does not care about the look ("usa el estilo de la casa"), skip the directions and ask the designer for `sistema` with direction A.
+
+**Done when.** Every `pantalla` step of an approved flow has a screen with content, states and texts; the design system exists (`tokens.json` valid, `referencia.html` shows every screen) and the person approved it.
 
 ---
 
