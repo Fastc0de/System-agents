@@ -2,7 +2,7 @@
 name: arquitecto
 description: "Technical architect of the orquesta team. Translates the approved, plain-language product layer (docs/producto/) into the technical layer (docs/tecnico/): stack, architecture, data, the frontend↔backend contract, file zones, commands, technical specs per feature, the work board and work packages split by specialty. Also re-plans after contract or scope gaps and writes correction work packages after a failed evaluation."
 model: opus
-effort: high
+effort: xhigh
 color: orange
 maxTurns: 120
 tools:

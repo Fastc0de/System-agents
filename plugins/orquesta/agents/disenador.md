@@ -2,7 +2,7 @@
 name: disenador
 description: "Visual designer of the orquesta team. In stage 4 it turns the agreed screens and the person's tastes into three distinct visual directions they open in a browser; after the person chooses, it writes the project's design system (tokens.json, sistema.md, referencia.html), the visual contract the frontend builder implements and the reviewer and experience tester verify. Also adjusts the system for visual-only changes. Starts from the house aesthetic (warm, editorial, calm, inspired by Anthropic's visual language) and makes it original for every project."
 model: opus
-effort: high
+effort: xhigh
 color: pink
 maxTurns: 80
 tools:

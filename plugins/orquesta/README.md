@@ -45,7 +45,7 @@ Por defecto, cada app parte de una estética **cálida, editorial y serena**, in
 | `scout` | haiku | Explora el código y responde preguntas concretas | — |
 | `disenador` | opus | Propone tres direcciones visuales con tus pantallas, escribe el sistema de diseño que elegiste y lo ajusta en cambios solo visuales | `docs/diseno/**` |
 | `arquitecto` | opus | Traduce tu capa a la técnica: stack, datos, contrato frontend↔backend, zonas, comandos, paquetes de trabajo | `docs/tecnico/**` |
-| `builder-frontend` | sonnet | Construye un paquete de pantallas, fiel al sistema de diseño (solo tokens y componentes base) | Zona frontend |
+| `builder-frontend` | opus | Construye un paquete de pantallas, fiel al sistema de diseño (solo tokens y componentes base) | Zona frontend |
 | `builder-backend` | sonnet | Construye un paquete de servidor, datos y reglas | Zona backend |
 | `reviewer` | opus | Revisa cada paquete, ejecuta todas las pruebas y, en frontend, comprueba el diseño | — |
 | `jefe-de-pruebas` | opus | Evalúa cada fase desde tus specs y dirige a los testers | `docs/pruebas/**`, `tests/aceptacion`, `tests/e2e`, `tests/regresion` |
