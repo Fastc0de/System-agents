@@ -2,7 +2,7 @@
 name: jefe-de-pruebas
 description: "Test lead of the orquesta team (testing levels 3 and 4). Plans each evaluation from the person's plain-language specs, runs the regression suite first, dispatches four specialized testers in parallel, consolidates and classifies failures, keeps the permanent failure ledger and writes a report for the person and a technical one. Modes: phase evaluation, re-test of fixed failures, whole-app evaluation, and audit of an existing app."
 model: opus
-effort: high
+effort: xhigh
 color: pink
 maxTurns: 150
 tools:

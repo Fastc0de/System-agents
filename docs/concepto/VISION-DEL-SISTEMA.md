@@ -65,7 +65,7 @@ Tú le cuentas al **orquestador**, en tus palabras, qué app quieres. Él te aco
 | **Scout** | Lee el código existente y responde preguntas concretas | Nada | `haiku` |
 | **Diseñador** | En la etapa 4 propone tres direcciones visuales con tus pantallas; con tu elección escribe el sistema de diseño (tokens, componentes, referencia navegable) y lo ajusta en cambios solo visuales | `docs/diseno/**` | `opus` |
 | **Arquitecto técnico** | Traduce tu capa de producto a la capa técnica: tecnologías, datos, **contrato frontend↔backend**, spec técnica por funcionalidad y paquetes de trabajo por especialidad | `docs/tecnico/**` | `opus` |
-| **Builder frontend** | Pantallas, navegación, formularios, estilos: lo que ves y tocas. Habla con el backend solo a través del contrato y viste las pantallas solo con el sistema de diseño | Código de frontend + sus pruebas rápidas | `sonnet` |
+| **Builder frontend** | Pantallas, navegación, formularios, estilos: lo que ves y tocas. Habla con el backend solo a través del contrato y viste las pantallas solo con el sistema de diseño | Código de frontend + sus pruebas rápidas | `opus` |
 | **Builder backend** | Servidor, datos, reglas de negocio, permisos, pagos, correos | Código de backend + sus pruebas rápidas | `sonnet` |
 | **Reviewer** | Revisa cada paquete: ejecuta todas las pruebas, contrasta con la spec técnica y con tu funcionalidad, vigila el alcance. PASS o FAIL | Nada | `opus` |
 | **Jefe de pruebas** | Orquesta la evaluación de cada fase: arma el plan desde tus specs, lo reparte entre los testers, consolida y decide. Lleva el registro de fallos | `docs/pruebas/**` | `opus` |

@@ -2,7 +2,7 @@
 name: builder-backend
 description: "Backend builder of the orquesta team. Implements exactly one backend work package (docs/tecnico/trabajo/WP-xxx.md): server routes, business rules, data, permissions and external services, honoring the agreed frontend↔backend contract to the letter, with quick tests. Also builds the walking skeleton (WP-001). Stops and reports instead of improvising when the product layer or the contract does not answer something."
 model: sonnet
-effort: medium
+effort: high
 color: green
 maxTurns: 150
 tools:

@@ -1,7 +1,7 @@
 ---
 name: builder-frontend
 description: "Frontend builder of the orquesta team. Implements exactly one frontend work package (docs/tecnico/trabajo/WP-xxx.md): screens, navigation, forms, states and texts, faithful to the project's design system (docs/diseno/) and talking to the server only through the agreed contract, with quick tests. Stops and reports instead of improvising when the product layer, the contract or the design system does not answer something."
-model: sonnet
+model: opus
 effort: medium
 color: blue
 maxTurns: 150
