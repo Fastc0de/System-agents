@@ -1,6 +1,6 @@
-# Visión del sistema de agentes · concepto v1
+# Visión del sistema de agentes · v1
 
-> **Estado:** concepto para discutir. Todavía no hay nada implementado. Esta versión incorpora tus comentarios sobre la v0 (sección 2). Al final están las decisiones que necesito de ti (sección 16).
+> **Estado:** implementado en [`plugins/orquesta`](../../plugins/orquesta/) (v1.0). Este documento explica el diseño; el [README del plugin](../../plugins/orquesta/README.md) explica la instalación y el uso. Las decisiones de la sección 16 se tomaron con las recomendaciones, salvo el empaquetado: es un **sistema único** (un solo plugin) que reemplaza a los plugins anteriores.
 
 Este documento es el mapa general. Dos temas tienen su propio documento:
 
@@ -51,7 +51,7 @@ Tú le cuentas al **orquestador**, en tus palabras, qué app quieres. Él te aco
 5. **Nadie se califica a sí mismo.** Los builders construyen, el reviewer revisa cada paquete y el equipo de pruebas evalúa cada fase.
 6. **Nada se olvida.** Cada fallo encontrado se convierte en una prueba que se ejecuta para siempre.
 7. **Tareas pequeñas y verificables.** El trabajo se parte en paquetes pequeños, uno por especialidad.
-8. **La memoria es evidencia.** Se escribe solo con lo verificado y al cerrar cada fase, siempre a través de tu `project-archiver`.
+8. **La memoria es evidencia.** Se escribe solo con lo verificado y al cerrar cada fase, siempre a través del `archivista`.
 9. **Lo crítico se garantiza con código.** Las reglas importantes las hacen cumplir hooks, no un "por favor" en el prompt.
 
 ---
@@ -60,7 +60,7 @@ Tú le cuentas al **orquestador**, en tus palabras, qué app quieres. Él te aco
 
 | Rol | Qué hace | Escribe en | Modelo propuesto |
 | --- | --- | --- | --- |
-| **Orquestador** (hilo principal) | Conversa contigo por etapas, escribe tu capa de producto, traduce, delega, hace cumplir los gates y te reporta en lenguaje simple | `docs/producto/**` y el estado del tablero | `opus` |
+| **Orquestador** (hilo principal) | Conversa contigo por etapas, escribe tu capa de producto, traduce, delega, hace cumplir los gates y te reporta en lenguaje simple | `docs/producto/**` y el estado del tablero. Lee con propósito: archivos concretos sí; exploraciones amplias, archivos enormes y registros, al scout | `opus` |
 | **Scout** | Lee el código existente y responde preguntas concretas | Nada | `haiku` |
 | **Arquitecto técnico** | Traduce tu capa de producto a la capa técnica: tecnologías, datos, **contrato frontend↔backend**, spec técnica por funcionalidad y paquetes de trabajo por especialidad | `docs/tecnico/**` | `opus` |
 | **Builder frontend** | Pantallas, navegación, formularios, estilos: lo que ves y tocas. Habla con el backend solo a través del contrato | Código de frontend + sus pruebas rápidas | `sonnet` |
@@ -68,7 +68,7 @@ Tú le cuentas al **orquestador**, en tus palabras, qué app quieres. Él te aco
 | **Reviewer** | Revisa cada paquete: ejecuta todas las pruebas, contrasta con la spec técnica y con tu funcionalidad, vigila el alcance. PASS o FAIL | Nada | `opus` |
 | **Jefe de pruebas** | Orquesta la evaluación de cada fase: arma el plan desde tus specs, lo reparte entre los testers, consolida y decide. Lleva el registro de fallos | `docs/pruebas/**` | `opus` |
 | **Testers ×4** | Recorridos de usuario en navegador real · servidor y reglas · casos límite y seguridad · experiencia (móvil, accesibilidad, textos) | Pruebas automáticas (`tests/aceptacion`, `tests/e2e`, `tests/regresion`) | `sonnet` |
-| **Project-archiver** (tu agente, sin cambios) | `init`, `sync` y `archive` de la memoria | `docs/project-memory/**` | `sonnet` |
+| **Archivista** (tu `project-archiver`, integrado) | `init`, `sync` y `archive` de la memoria | `docs/project-memory/**` | `sonnet` |
 
 **Especialistas opcionales**, que el arquitecto técnico propone solo si el proyecto los necesita: **móvil** (app nativa), **integraciones** (pagos, mensajería, servicios externos complejos) y **despliegue** (publicar la app en internet).
 
@@ -118,7 +118,7 @@ docs/
     trabajo/PLAN.md · trabajo/WP-007.md …
   pruebas/                      CAPA DE PRUEBAS · la escribe el jefe de pruebas
     matriz-de-cobertura.md · planes/ · registro-de-fallos.md · informes/
-  project-memory/               TU SISTEMA · lo escribe el project-archiver
+  project-memory/               MEMORIA (tu formato) · la escribe el archivista
 tests/
   unit/ (builders) · aceptacion/ · e2e/ · regresion/ (equipo de pruebas)
 ```
@@ -240,7 +240,7 @@ Las dudas técnicas menores las resuelve el builder con la opción conservadora 
 
 ### 8.6 Higiene de contexto
 
-- El orquestador no lee código ni logs. Pregunta al scout o lee los reportes.
+- El orquestador **lee con propósito**: documentos, reportes y archivos concretos para comprobar algo o responderte; las exploraciones amplias, los archivos enormes, los registros y los cambios extensos se los pide al scout. Un hook bloquea las lecturas voluminosas y le indica que delegue.
 - Cada encargo es un brief autocontenido. El resto del contexto lo inyecta un hook.
 - Los subagentes devuelven reportes estructurados y cortos, nunca transcripciones.
 
@@ -269,14 +269,14 @@ Cada fallo se reproduce con una **prueba automática antes de arreglarlo**, se r
 
 ![Memoria y contexto](diagramas/03-memoria-y-contexto.png)
 
-Tu sistema se integra **tal cual**: mismo esquema, mismo `archive.js`, mismo `project-archiver` con su guard. Así sigue siendo compatible con la versión de OpenCode.
+La memoria forma parte del sistema con **tu mismo formato**: mismo esquema en `docs/project-memory/`, mismo `archive.js` y las mismas reglas de tu archivador, ahora como skill `memoria` y agente `archivista` dentro de orquesta. Los proyectos que ya tenían memoria siguen funcionando.
 
 | Momento | Qué pasa | Mecanismo |
 | --- | --- | --- |
 | Abres una sesión | El orquestador recibe `status.md` y carga el resto (`load`) | Tu hook `session-start` + instrucción del orquestador |
 | Nace cualquier subagente | Recibe un paquete de contexto: memoria vigente, resumen de la idea, índice de funcionalidades y flujos, contrato técnico y reglas de su rol. A los testers, además, las **zonas frágiles** | Hook `SubagentStart` (verificado en la doc de Claude Code) |
-| Se aprueba tu capa de producto | `sync`: tu skill trata una spec aprobada como hito | Orquestador → `project-archiver` |
-| Se cierra una fase | `sync` con la evidencia: qué se construyó, cómo se probó y patrones de fallos | Orquestador → `project-archiver` |
+| Se aprueba tu capa de producto | `sync`: tu skill trata una spec aprobada como hito | Orquestador → `archivista` |
+| Se cierra una fase | `sync` con la evidencia: qué se construyó, cómo se probó y patrones de fallos | Orquestador → `archivista` |
 | `sessions.md` pasa de 10 entradas | Archivo sin pérdidas | Tu `archive.js` |
 
 El paquete inyectado tiene un **tope de tamaño** (~4k tokens), va **marcado como dato y no como instrucción** ("puede estar desactualizado: el repo manda") y no incluye historia (`sessions.md`, `archive/`).
@@ -291,13 +291,13 @@ Los agentes empaquetados en un plugin no pueden traer sus propios hooks; Claude 
 
 | Hook | Evento | Qué garantiza |
 | --- | --- | --- |
-| **Guardia de roles** | `PreToolUse` | Cada rol escribe solo en su zona (sección 12). Los builders no pueden tocar pruebas de aceptación ni de regresión, ni el contrato. Los testers no pueden tocar el código de la app. El orquestador solo delega en el equipo; el jefe de pruebas, solo en testers; nadie más delega |
+| **Guardia de roles** | `PreToolUse` | Cada rol escribe solo en su zona (sección 12). Los builders no pueden tocar pruebas de aceptación ni de regresión, ni el contrato. Los testers no pueden tocar el código de la app. El orquestador lee con propósito (las lecturas voluminosas van al scout) y solo delega en el equipo; el jefe de pruebas, solo en testers; el archivista conserva los límites de tu archivador original; nadie más delega |
 | **Inyección de contexto** | `SubagentStart` | Todo subagente nace con memoria + specs + reglas de su rol |
 | **Pruebas rápidas obligatorias** | `SubagentStop` (builders) | Al intentar terminar, el hook ejecuta las pruebas rápidas; si fallan, el builder sigue trabajando (nivel 1) |
 | **Control de reporte** | `SubagentStop` | Builder, reviewer, arquitecto y jefe de pruebas no terminan sin su bloque de reporte. Un informe de fase sin resultados de regresión es devuelto |
 | **Generador de flujos** | `PostToolUse` | Al guardar un flujo: valida, genera el `.md` y el `.excalidraw` y devuelve los errores al orquestador |
 | **Recordatorio de gate** | `PostToolUse` sobre la delegación | Recuerda al orquestador que un paquete no está hecho sin el PASS del reviewer, ni una fase sin la evaluación del jefe de pruebas |
-| **Arranque** | `SessionStart` | Tu hook de memoria + el estado de las etapas y del tablero |
+| **Arranque** | `SessionStart` | Estado de la memoria + etapas, tablero y fallos pendientes |
 
 ---
 
@@ -310,27 +310,32 @@ Los agentes empaquetados en un plugin no pueden traer sus propios hooks; Claude 
 | `docs/pruebas/**`, `tests/aceptacion`, `tests/e2e`, `tests/regresion` | Solo el jefe de pruebas y los testers | Todos |
 | Código de frontend + sus pruebas rápidas | Builder frontend, dentro del alcance de su paquete | Reviewer, testers, scout |
 | Código de backend + sus pruebas rápidas | Builder backend, dentro del alcance de su paquete | Reviewer, testers, scout |
-| `docs/project-memory/**` | Solo el `project-archiver` | Todos (inyectada) |
+| `docs/project-memory/**` | Solo el `archivista` | Todos (inyectada) |
 
 ---
 
-## 13. Cómo se empaquetaría
+## 13. Cómo está empaquetado
 
-Este repo sería un **marketplace de plugins de Claude Code** con tres plugins:
+Un **sistema único**: un solo plugin de Claude Code, `orquesta`, publicado en el marketplace de este repo. Reemplaza a los plugins anteriores; la memoria y las pruebas viven dentro.
 
 ```text
 System-agents/
   .claude-plugin/marketplace.json
-  plugins/
-    project-memory/   tu plugin, sin cambios
-    pruebas/          jefe de pruebas + testers + registro de fallos; usable solo, sobre cualquier app
-    orquesta/         orquestador, scout, arquitecto, builders y reviewer + flujos + hooks
-                      depende de project-memory y de pruebas
+  plugins/orquesta/
+    .claude-plugin/plugin.json
+    settings.json                    { "agent": "orquestador" }: el orquestador es el agente principal
+    agents/                          orquestador, scout, arquitecto, builder-frontend, builder-backend, reviewer,
+                                     jefe-de-pruebas, 4 testers y archivista
+    skills/producto/                 etapas, plantillas, formatos y el generador de diagramas
+    skills/tecnico/                  stack de la casa y plantillas técnicas
+    skills/pruebas/                  evaluación y registro de fallos
+    skills/memoria/                  tu sistema de memoria, integrado
+    hooks/                           guardia, contexto, cierre, diagramas, recordatorio, inicio
+    tests/                           pruebas automáticas del propio plugin
 ```
 
-- `orquesta` declara a los otros dos como **dependencias**: al instalarlo, la memoria y las pruebas vienen integradas por defecto.
-- `pruebas` funciona también **solo**, para auditar una app que ya existe aunque no se haya hecho con este sistema.
-- El `settings.json` de `orquesta` convierte al orquestador en el agente principal de la sesión, así que conviene instalarlo **por proyecto**.
+- El `settings.json` convierte al orquestador en el agente principal de la sesión, así que se instala **por proyecto**.
+- Para revisar una app ya hecha no hace falta otro plugin: se le pide al orquestador («audita mi app») o se usa `/orquesta:pruebas auditoria`.
 
 ---
 
@@ -357,13 +362,13 @@ Una persona que no programa no debería tener que ejecutar comandos para ver su 
 | Más agentes y modelos `opus` cuestan más | Modo económico (decisión 4) y evaluaciones de fase centradas en lo que cambió y lo crítico |
 | El paralelismo puede generar conflictos | Solo frontend y backend a la vez, en archivos distintos, contra un contrato fijo |
 | Una spec aprobada puede estar equivocada | La demo de cada fase y los cambios de idea existen para eso |
-| Los hooks necesitan `node` | Igual que tu plugin actual: si falta, fallan abiertos y avisan |
+| Los hooks necesitan `node` | Si falta, fallan abiertos (no bloquean) y no se inyecta contexto |
 
 ---
 
-## 16. Decisiones que necesito de ti
+## 16. Decisiones
 
-Cada una trae mi recomendación. Si estás de acuerdo con todas, basta con "de acuerdo con las recomendaciones".
+**Decididas:** todas con la recomendación, salvo la 10, donde manda tu pedido de un sistema único.
 
 | # | Decisión | Opciones | Recomiendo |
 | --- | --- | --- | --- |
@@ -376,18 +381,23 @@ Cada una trae mi recomendación. Si estás de acuerdo con todas, basta con "de a
 | 7 | Evaluación de fase en modo "de un tiro" | (a) se corrige sola y solo te interrumpe si un fallo requiere una decisión tuya · (b) se detiene ante cualquier fallo | **(a)** |
 | 8 | Granularidad de aprobación en la etapa 3 | (a) apruebas cada flujo · (b) todos juntos | **(a)** al principio |
 | 9 | Cómo ver los resultados | (a) capturas y video · (b) enlace de prueba · (c) ambas | **(c)**: capturas y video desde la fase 1, enlace cuando se configure el alojamiento |
-| 10 | Empaquetado | (a) tres plugins (`project-memory`, `pruebas`, `orquesta`) · (b) uno solo | **(a)**: tu plugin queda intacto y las pruebas sirven para cualquier app |
+| 10 | Empaquetado | (a) tres plugins · (b) uno solo | **(b) sistema único**, por tu decisión: un solo plugin `orquesta` que reemplaza a los anteriores |
 | 11 | Idioma | (a) instrucciones internas de los agentes en inglés; todo lo que tú ves, en español · (b) todo en español | **(a)** |
 | 12 | Activación | (a) por proyecto · (b) en todas tus sesiones | **(a)** |
 
 ---
 
-## 17. Próximos pasos
+## 17. Estado de la implementación
 
-1. **Tú:** revisas este documento, los dos documentos de detalle y los seis diagramas; respondes las decisiones o las cambias.
-2. **Yo:** ajusto el concepto.
-3. Construimos el sistema **con su propio método**: este concepto hace de etapas 1 a 3, y después vienen el plan por fases y la construcción:
-   - **Fase 1 · Núcleo:** orquestador con etapas y lenguaje natural, arquitecto técnico, builders frontend y backend, reviewer, inyección de memoria, contratos de reporte.
-   - **Fase 2 · Flujos:** fichas de funcionalidad, validador y generadores Mermaid y Excalidraw (flujos, mapas y bocetos).
-   - **Fase 3 · Pruebas:** plugin `pruebas` con jefe de pruebas, testers, registro de fallos y modo auditoría.
-   - **Fase 4 · Guardias y escala:** propiedad por rol, pruebas obligatorias por hook, especialistas opcionales y espacios de trabajo aislados.
+Implementado en `plugins/orquesta` (v1.0):
+
+- Los 12 agentes, las 4 skills y los 6 hooks descritos en este documento.
+- El generador de diagramas: flujos (Mermaid + Excalidraw con carriles por actor y flechas que no atraviesan cajas), mapas, bocetos y línea de fases. Hay un ejemplo en [`ejemplos/barberia`](../../ejemplos/barberia/).
+- 32 pruebas automáticas del propio plugin (`node --test tests/*.test.js`).
+- Verificado en una sesión real de Claude Code: el orquestador arranca como agente principal, delega en el scout y en el jefe de pruebas, cada subagente recibe la memoria sin pedirla, la guardia bloquea al orquestador si intenta escribir código, al guardar un flujo se generan sus vistas, y el jefe de pruebas lanza a sus testers.
+
+Pendiente para próximas versiones:
+
+- **Especialistas opcionales** (móvil nativo, integraciones complejas, despliegue): hoy las integraciones las hace el builder backend y la publicación se prepara como un paquete más, con tu cuenta y tu OK sobre el costo.
+- **Espacios de trabajo aislados** para más de dos builders a la vez.
+- Una primera app real construida de punta a punta con el sistema, para afinar los prompts con la experiencia.

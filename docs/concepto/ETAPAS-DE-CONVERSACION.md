@@ -1,4 +1,4 @@
-# Conversación por etapas · concepto v1
+# Conversación por etapas · v1
 
 > Parte de la [visión del sistema](VISION-DEL-SISTEMA.md). Describe cómo conversas con el orquestador desde la idea hasta la app terminada, pensado para una persona que no programa.
 

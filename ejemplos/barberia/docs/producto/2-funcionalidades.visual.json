@@ -1,0 +1,17 @@
+{
+  "tipo": "mapa",
+  "titulo": "Mapa de funcionalidades · Barbería Navaja",
+  "subtitulo": "Qué podrá hacer cada persona. Verde: imprescindible para la primera versión; amarillo: después.",
+  "grupos": [
+    { "nombre": "Clientes", "descripcion": "Reservan y gestionan sus citas desde el móvil.",
+      "items": [
+        { "id": "FUN-01", "texto": "Registrarse", "etiqueta": "imprescindible" },
+        { "id": "FUN-02", "texto": "Reservar una cita", "etiqueta": "imprescindible" },
+        { "id": "FUN-03", "texto": "Iniciar sesión", "etiqueta": "imprescindible" },
+        { "id": "FUN-06", "texto": "Pagar al reservar", "etiqueta": "después" }
+      ] },
+    { "nombre": "Barberos", "descripcion": "Ven y organizan su día.",
+      "items": [ { "id": "FUN-04", "texto": "Ver la agenda del día", "etiqueta": "imprescindible" } ] },
+    { "nombre": "Dueño", "items": [ { "id": "FUN-05", "texto": "Gestionar servicios y precios", "etiqueta": "después" } ] }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "id": "F01",
+  "titulo": "Iniciar sesión",
+  "funcionalidad": "FUN-03",
+  "version": 2,
+  "estado": "aprobado",
+  "resumen": "Un cliente que ya tiene cuenta entra con su correo y su contraseña para ver sus citas.",
+  "disparador": "El cliente abre la app y no tiene una sesión activa.",
+  "actores": [
+    { "id": "cliente", "nombre": "Cliente" },
+    { "id": "sistema", "nombre": "La app" }
+  ],
+  "precondiciones": ["El cliente ya se registró (FUN-01)."],
+  "postcondiciones": ["El cliente ve «Mis citas» y su sesión dura 7 días en ese dispositivo."],
+  "pasos": [
+    { "id": "inicio", "tipo": "inicio", "texto": "Abres la app", "actor": "cliente" },
+    { "id": "pantalla_login", "tipo": "pantalla", "texto": "Pantalla «Entrar»: correo y contraseña", "actor": "cliente",
+      "detalle": "La persona escribe su correo y su contraseña y pulsa «Entrar».",
+      "ve": "Dos campos (correo y contraseña), el botón «Entrar» y el enlace «¿Olvidaste tu contraseña?»." },
+    { "id": "formato_ok", "tipo": "decision", "texto": "¿El correo está bien escrito?", "actor": "sistema",
+      "detalle": "Antes de buscar la cuenta se comprueba que el correo tenga forma de correo.",
+      "reglas": ["Se ignoran los espacios al principio y al final", "No importan mayúsculas o minúsculas"] },
+    { "id": "buscar_cuenta", "tipo": "datos", "texto": "Buscamos tu cuenta", "actor": "sistema",
+      "detalle": "Se busca la cuenta que tenga ese correo.", "datos": ["Cuenta del cliente (consulta)"] },
+    { "id": "password_ok", "tipo": "decision", "texto": "¿La contraseña coincide?", "actor": "sistema",
+      "detalle": "Se compara la contraseña escrita con la guardada. Si no existe una cuenta con ese correo, se responde igual que con una contraseña incorrecta.",
+      "reglas": ["Nunca se dice cuál de los dos datos falló"] },
+    { "id": "registrar_fallo", "tipo": "accion", "texto": "Te avisamos y cuenta como intento fallido", "actor": "sistema",
+      "detalle": "Se suma un intento fallido a la cuenta y se muestra el aviso.",
+      "ve": "«Correo o contraseña incorrectos»", "datos": ["Intentos fallidos de la cuenta (actualizar)"] },
+    { "id": "limite", "tipo": "decision", "texto": "¿5 intentos fallidos seguidos?", "actor": "sistema",
+      "detalle": "Se mira cuántos intentos fallidos seguidos lleva la cuenta.",
+      "reglas": ["El contador vuelve a cero al entrar con éxito"] },
+    { "id": "crear_sesion", "tipo": "accion", "texto": "Entras a tu cuenta", "actor": "sistema",
+      "detalle": "Se crea una sesión que dura 7 días en ese dispositivo y se pone a cero el contador de intentos.",
+      "reglas": ["R-02: la sesión dura 7 días", "R-05: se permiten varias sesiones por cliente"],
+      "datos": ["Sesión (crear)", "Último acceso del cliente (actualizar)"],
+      "si_falla": ["Si no se puede guardar la sesión, se muestra «Inténtalo de nuevo» y no se entra"] },
+    { "id": "fin_ok", "tipo": "fin", "texto": "Ves «Mis citas»", "actor": "cliente", "resultado": "exito" },
+    { "id": "fin_pausa", "tipo": "fin", "texto": "Cuenta en pausa 15 min por seguridad", "actor": "cliente", "resultado": "error" }
+  ],
+  "transiciones": [
+    { "de": "inicio", "a": "pantalla_login" },
+    { "de": "pantalla_login", "a": "formato_ok" },
+    { "de": "formato_ok", "a": "buscar_cuenta", "condicion": "sí" },
+    { "de": "formato_ok", "a": "pantalla_login", "condicion": "no: te pedimos corregirlo", "tipo": "error" },
+    { "de": "buscar_cuenta", "a": "password_ok" },
+    { "de": "password_ok", "a": "crear_sesion", "condicion": "sí" },
+    { "de": "password_ok", "a": "registrar_fallo", "condicion": "no" },
+    { "de": "registrar_fallo", "a": "limite" },
+    { "de": "limite", "a": "fin_pausa", "condicion": "sí" },
+    { "de": "limite", "a": "pantalla_login", "condicion": "no: lo intentas otra vez", "tipo": "error" },
+    { "de": "crear_sesion", "a": "fin_ok" }
+  ],
+  "criterios": [
+    "Con datos correctos entro y veo «Mis citas».",
+    "Con una contraseña incorrecta veo «Correo o contraseña incorrectos», sin que diga cuál de los dos falló.",
+    "Al 5.º intento fallido seguido no puedo entrar durante 15 minutos, aunque escriba bien la contraseña."
+  ],
+  "preguntas_abiertas": [],
+  "cambios": [
+    { "version": 1, "fecha": "2026-10-13", "cambio": "Primera versión." },
+    { "version": 2, "fecha": "2026-10-13", "cambio": "Pausa de 15 minutos tras 5 intentos fallidos." }
+  ]
+}

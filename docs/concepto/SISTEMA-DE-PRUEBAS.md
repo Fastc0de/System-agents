@@ -1,4 +1,4 @@
-# Sistema de pruebas · concepto v1
+# Sistema de pruebas · v1
 
 > Parte de la [visión del sistema](VISION-DEL-SISTEMA.md). Describe cómo se prueba lo construido contra lo que pediste, quién lo hace y cómo se garantiza que un fallo no vuelva.
 
@@ -163,7 +163,7 @@ El **informe técnico** (para el orquestador y los builders) tiene el detalle de
 
 ## 9. Modo auditoría: probar una app que ya existe
 
-Sirve para apps hechas con este sistema o fuera de él. Como el plugin `pruebas` funciona solo, se puede instalar en cualquier proyecto.
+Sirve para apps hechas con este sistema o fuera de él. Basta con pedírselo al orquestador («audita mi app») o usar `/orquesta:pruebas auditoria`.
 
 1. **Reconocimiento:** el jefe de pruebas, con ayuda de un scout, recorre la app y su código.
 2. **"Esto es lo que creo que hace tu app":** te presenta en lenguaje natural un catálogo de funcionalidades con sus flujos principales.

@@ -1,0 +1,30 @@
+{
+  "tipo": "boceto",
+  "titulo": "Bocetos · Reservar una cita",
+  "subtitulo": "Versión móvil. Cajas simples: muestran qué hay en cada pantalla, no el diseño final.",
+  "dispositivo": "movil",
+  "pantallas": [
+    { "id": "P01", "nombre": "Elegir servicio", "elementos": [
+      { "tipo": "menu", "texto": "Barbería Navaja" },
+      { "tipo": "encabezado", "texto": "¿Qué te hacemos hoy?" },
+      { "tipo": "lista", "items": ["Corte · 30 min · 15 €", "Barba · 20 min · 10 €", "Corte + barba · 45 min · 22 €"] },
+      { "tipo": "boton", "texto": "Continuar" } ],
+      "notas": "Si no hay servicios cargados, se muestra «Pronto abriremos reservas»." },
+    { "id": "P02", "nombre": "Elegir día y hora", "elementos": [
+      { "tipo": "menu", "texto": "← Volver" },
+      { "tipo": "encabezado", "texto": "Elige cuándo" },
+      { "tipo": "campo", "etiqueta": "Barbero", "texto": "Cualquiera" },
+      { "tipo": "tarjeta", "texto": "Martes 14 · 10:00 · 10:30 · 11:00 · 12:30" },
+      { "tipo": "aviso", "texto": "Si alguien toma la hora antes que tú, te lo avisamos y eliges otra." },
+      { "tipo": "boton", "texto": "Confirmar reserva" } ] },
+    { "id": "P03", "nombre": "Reserva confirmada", "elementos": [
+      { "tipo": "encabezado", "texto": "¡Listo!" },
+      { "tipo": "texto", "texto": "Corte con Marco, martes 14 a las 10:00. Te enviamos un correo con los detalles." },
+      { "tipo": "separador" },
+      { "tipo": "boton", "texto": "Ver mis citas" } ] }
+  ],
+  "navegacion": [
+    { "de": "P01", "a": "P02", "accion": "pulsa Continuar" },
+    { "de": "P02", "a": "P03", "accion": "pulsa Confirmar" }
+  ]
+}

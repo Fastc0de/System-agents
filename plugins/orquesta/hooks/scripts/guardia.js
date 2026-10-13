@@ -257,7 +257,7 @@ function checkWorkerBash(role, command, root) {
     if (sub === "stash" && (!args.length || args[0] === "list" || args[0] === "show")) continue;
     if (!GIT_READ.includes(sub)) return `\`git ${sub}\` no está permitido: solo el orquestador hace commits y maneja ramas. Usa git solo para consultar.`;
   }
-  if (role !== "jefe-de-pruebas" && !c.BUILDERS.includes(role) && c.ADDS_PACKAGE.test(command)) {
+  if (!c.BUILDERS.includes(role) && c.ADDS_PACKAGE.test(command)) {
     return "añadir dependencias cambia la app; si falta una herramienta, repórtalo (BLOCKED) para que el orquestador cree un paquete.";
   }
   const zones = c.BUILDERS.includes(role) ? null : writeZones(role, root);

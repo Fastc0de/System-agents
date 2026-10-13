@@ -1,16 +1,29 @@
 # System-agents
 
-Sistema de orquestación de agentes para vibe coding con Claude Code, pensado para personas que no programan. Tú conversas solo con un **orquestador**, en lenguaje natural y por etapas. Él convierte tu visión en funcionalidades, flujos y pantallas que puedes ver. Detrás, un **equipo técnico** (arquitecto, builders frontend y backend, reviewer) construye por fases, y un **equipo de pruebas** evalúa cada fase contra lo que pediste. Todos trabajan con la **memoria del proyecto**.
+**Orquesta**: un sistema único de vibe coding para Claude Code, pensado para personas que no programan. Conversas con un solo agente, el **orquestador**, en lenguaje natural. Él te guía por cinco etapas para que veas tu app antes de construirla: visión, funcionalidades, lógica, experiencia e implementación. Después dirige a un equipo técnico (arquitecto, builders de frontend y backend, reviewer) que la construye por fases, y a un equipo de pruebas que evalúa cada fase contra lo que pediste. Todos trabajan con la memoria del proyecto.
 
-> **Estado: concepto v1.** Todavía no hay nada implementado. Primero acordamos la visión.
+> **Estado:** v1.0 implementada en [`plugins/orquesta`](plugins/orquesta/).
 
-## Empieza aquí
+## Instalación
 
-- **[Visión del sistema](docs/concepto/VISION-DEL-SISTEMA.md):** el mapa general, el equipo, las dos capas de documentación, la disciplina de trabajo, la memoria y las decisiones abiertas.
-- **[Conversación por etapas](docs/concepto/ETAPAS-DE-CONVERSACION.md):** cómo te habla el orquestador, las cinco etapas y los modos de construcción.
-- **[Sistema de pruebas](docs/concepto/SISTEMA-DE-PRUEBAS.md):** cuatro niveles de prueba, jefe de pruebas con testers y registro de fallos.
+En Claude Code, dentro de la carpeta de tu proyecto:
 
-## Diagramas
+```text
+/plugin marketplace add fastc0de/system-agents
+/plugin install orquesta@system-agents --scope project
+```
+
+Después escribe lo que quieres construir, por ejemplo: «Quiero una app para que mi barbería reciba reservas online». Necesitas `node` instalado.
+
+## Documentación
+
+- **[README del plugin](plugins/orquesta/README.md):** uso, equipo, reglas y skills.
+- **[Visión del sistema](docs/concepto/VISION-DEL-SISTEMA.md):** el diseño completo y por qué es así.
+- **[Conversación por etapas](docs/concepto/ETAPAS-DE-CONVERSACION.md):** cómo te habla el orquestador, qué ves y qué decides en cada etapa, y los modos de construcción.
+- **[Sistema de pruebas](docs/concepto/SISTEMA-DE-PRUEBAS.md):** cuatro niveles, jefe de pruebas con cuatro testers y registro de fallos.
+- **[Ejemplo: Barbería Navaja](ejemplos/barberia/):** la capa de producto que produce el orquestador, con sus diagramas.
+
+## Diagramas del sistema
 
 Cada uno es un `.excalidraw` editable, con su vista previa `.png`:
 
@@ -22,3 +35,10 @@ Cada uno es un `.excalidraw` editable, con su vista previa `.png`:
 6. [Sistema de pruebas](docs/concepto/diagramas/06-sistema-de-pruebas.png)
 
 Para editar un diagrama, abre el `.excalidraw` en [excalidraw.com](https://excalidraw.com) (menú *Open*) o con la extensión de Excalidraw de VS Code.
+
+## Desarrollo
+
+```text
+cd plugins/orquesta && node --test tests/*.test.js
+claude plugin validate plugins/orquesta
+```

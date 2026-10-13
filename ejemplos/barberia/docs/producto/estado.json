@@ -1,0 +1,10 @@
+{
+  "proyecto": "Barbería Navaja",
+  "etapa": 5,
+  "etapas": { "1": "aprobada", "2": "aprobada", "3": "aprobada", "4": "aprobada", "5": "en-curso" },
+  "modo": null,
+  "hasta_fase": null,
+  "fase_actual": null,
+  "memoria": true,
+  "actualizado": "2026-10-13"
+}

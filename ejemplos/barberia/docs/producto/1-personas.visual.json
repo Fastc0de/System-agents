@@ -1,0 +1,10 @@
+{
+  "tipo": "mapa",
+  "titulo": "Personas · Barbería Navaja",
+  "subtitulo": "Quién usa la app y qué busca cada uno.",
+  "grupos": [
+    { "nombre": "Clientes", "items": ["Reservar sin llamar por teléfono", "Saber cuándo es su cita", "No perder el turno si llegan tarde"] },
+    { "nombre": "Barberos", "items": ["Ver su día de un vistazo", "No tener dos clientes a la misma hora"] },
+    { "nombre": "Dueño", "items": ["Menos huecos vacíos en la agenda", "Cambiar servicios y precios sin ayuda"] }
+  ]
+}
